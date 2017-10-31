@@ -1,0 +1,28 @@
+! Numéro de version dans UserInfo
+! CHANGER LE NUMERO DE VERSION DANS LA BASE !!
+
+à faire :
+- interrompre le timer si espace attendu
+- option "timer fluide ou pas" (pour les stressés du temps)
+
+v0.8.0
+- Début symétrie
+
+v0.7 (validée)
+- Synthèse : préparation multi panel
+- Rotation : possibilité de laisser la mauvaise réponse affichée
+- Rotation : 8 niveaux de difficultés (rotation nulle autorisée niveau 1)
+- Rotation : timer plus fluide
+
+v0.6 (05/09/2016, loupé la maj)
+- Fiches Patients : rajout du sexe du patient
+- Monkey : rajout moyenne
+
+v0.5 (29/08/2016)
+- rotations 3D
+
+v0.4 (21/08/2016)
+- discrimination polygones
+
+v0.1 (11/08/2016)
+- version préliminaire
