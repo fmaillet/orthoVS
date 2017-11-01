@@ -59,7 +59,7 @@ public class ParamsSymetry extends javax.swing.JPanel {
             jGridSize.setEnabled (true) ;
             jDurée.setEnabled (true) ;
             //jDurée.setValue (1) ;
-            jGridSize.setSelectedIndex(1);
+            jGridSize.setSelectedIndex(2);
             //jLabelGrid.setEnabled (true) ;
             //jGridSize.setSelectedIndex(1);
         }
@@ -145,7 +145,7 @@ public class ParamsSymetry extends javax.swing.JPanel {
         jPresent.setModel(new javax.swing.SpinnerNumberModel(2000, 500, 5000, 250));
         jPresent.setOpaque(false);
 
-        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " 3 x 3", " 4 x 4", " 5 x 5" }));
+        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4" }));
         jGridSize.setToolTipText("Taille de la grille");
 
         jLabel12.setText("(1 à 15 minutes)");
@@ -241,7 +241,7 @@ public class ParamsSymetry extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jManualStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jManualStartActionPerformed
-        int size = (Integer) jGridSize.getSelectedIndex() +3 ;
+        int size = (Integer) jGridSize.getSelectedIndex() ;
         int present   = (Integer) jPresent.getValue() ;
         int durée =  (Integer) jDurée.getValue() ;
         //on lance l'activité
@@ -286,6 +286,9 @@ class LaunchSymetry extends Thread {
     int size, durée, present ;
     JProgressBar progressBar ;
     JButton jTime, jButterfly ;
+    
+    //Paramètres
+    Random rand = new Random () ;
     
     LaunchSymetry (JPanel p, int size, int durée, int present) {
         this.p = p ;
@@ -333,19 +336,36 @@ class LaunchSymetry extends Thread {
         //On boucle sur la série
         boolean notFin = true ;
         long tempsDebut = System.currentTimeMillis();
+        //Taille des grilles
+        int h, v ;
+        switch (size) {
+            case 0 : h=3; v=2; break;
+            case 1 : h=3; v=3; break;
+            case 2 : h=4; v=2; break;
+            case 3 : h=4; v=3; break;
+            case 4 : h=4; v=4; break;
+            default: h=4; v=4; break;
+        }
+        //Horizontal ou vertical ?
+        boolean vert = rand.nextBoolean() ;
+        GrilleSymetry originalGrid = new GrilleSymetry (v, h, vert, false) ;
+        GrilleSymetry mirrorGrid   = new GrilleSymetry (v, h, vert, true) ;
+        //On ajoute les grilles au JFrame
+        OrthoVS.fen.getContentPane().add (originalGrid) ;
+        OrthoVS.fen.getContentPane().add (mirrorGrid) ;
+        originalGrid.validate () ;
+        mirrorGrid.validate () ;
+        //On écoute le clavier pour la touche ESC
+        originalGrid.addKeyListener(originalGrid);
         //On positionne les éléments
-        
-        GrilleSymetry grille = new GrilleSymetry (4, 3, false) ;
-        
-        OrthoVS.fen.getContentPane().add (grille) ;
-        grille.validate () ;
-        grille.addKeyListener(grille);
-        //On positionne les éléments
-        progressBar.setBounds(grille.getX(), grille.getY()-50, grille.getWidth(), 20);
-        jTime.setBounds(grille.getX() - 35 , grille.getY()-56, 32, 32);
+        if (vert)
+            progressBar.setBounds(originalGrid.getX(), originalGrid.getY()-50, originalGrid.getWidth(), 20);
+        else
+            progressBar.setBounds(originalGrid.getX(), originalGrid.getY()-50, originalGrid.getWidth()*2, 20);
+        jTime.setBounds(originalGrid.getX() - 35 , originalGrid.getY()-56, 32, 32);
         //On redessine
         OrthoVS.fen.repaint () ;
-        grille.requestFocusInWindow();
+        originalGrid.requestFocusInWindow();
         //On lance le timer
         DrawTimer timerThrd = new DrawTimer (progressBar, tempsDebut, this.durée) ;
         
@@ -354,9 +374,9 @@ class LaunchSymetry extends Thread {
             //On laisse un peu passer le temps...
             try { sleep ( 250 ) ;} catch (Exception e) {}
             //Si ESC on sort
-            if (grille.out) notFin = false ;
+            if (originalGrid.out) notFin = false ;
             //On reprend le focus pour la touche ESC
-            grille.requestFocusInWindow();
+            originalGrid.requestFocusInWindow();
             
             //C'est la fin ?
             float seconds = (System.currentTimeMillis() - tempsDebut) / 1000F;
@@ -365,7 +385,9 @@ class LaunchSymetry extends Thread {
         } while (notFin) ;
        
         //On réaffiche les paramètres
-        OrthoVS.fen.getContentPane().remove(grille);
+        if (timerThrd.isAlive()) timerThrd.interrupt();
+        OrthoVS.fen.getContentPane().remove(originalGrid);
+        OrthoVS.fen.getContentPane().remove(mirrorGrid);
         OrthoVS.fen.getContentPane().remove(progressBar);
         OrthoVS.fen.getContentPane().remove(jTime);
         OrthoVS.fen.getContentPane().remove(jButterfly);
@@ -381,26 +403,38 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
     
     //paramètres
     private boolean vertical ;
+    private boolean isMirror ;
     //Pour sortir
     public boolean out = false ;
     //Cases
-    MonkeyButton original[][] ;
-    MonkeyButton mirror[][]   ;
+    private MonkeyButton original[][] ;
+    private MonkeyButton mirror[][]   ;
     
     //Constructor
-    GrilleSymetry (int i, int j, boolean vertical) {
+    GrilleSymetry (int i, int j, boolean vertical, boolean mirror) {
         //Paramètres
         this.vertical = vertical ;
+        this.isMirror = mirror ;
         //Taille du panel
-        j =j * 2 ;
         if (vertical) {
             int t = i ;
             i = j ;
             j = t ;
         }
-        setBounds((OrthoVS.fen.getContentPane().getWidth()-(i*100))/2, (OrthoVS.fen.getContentPane().getHeight()-(j*100))/2, i*100, j*100);
+        //On positionne la grille
+        if (vertical) {
+            if (mirror)
+                setBounds((OrthoVS.fen.getContentPane().getWidth()-(i*100))/2, (OrthoVS.fen.getContentPane().getHeight()/2), i*100, j*100);
+            else
+                setBounds((OrthoVS.fen.getContentPane().getWidth()-(i*100))/2, (OrthoVS.fen.getContentPane().getHeight()/2-(j*100)), i*100, j*100);
+        } else {
+            if (mirror)
+                setBounds((OrthoVS.fen.getContentPane().getWidth()/2), (OrthoVS.fen.getContentPane().getHeight()-(j*100))/2, i*100, j*100);
+            else
+                setBounds((OrthoVS.fen.getContentPane().getWidth()/2-(i*100)), (OrthoVS.fen.getContentPane().getHeight()-(j*100))/2, i*100, j*100);
+        }
         //this.setOpaque(false);
-        //setBackground(Color.CYAN);
+        setBackground(Color.CYAN);
         //Layout
         GridLayout g = new GridLayout(j, i) ;
         g.setHgap(6); g.setVgap(6);
@@ -409,7 +443,7 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         
         //On crée les buttons
         original = new MonkeyButton [i][j] ;
-        mirror = new MonkeyButton [i][j] ;
+        this.mirror = new MonkeyButton [i][j] ;
         for (int n=0; n<i; n++)
             for (int ii=0; ii<j; ii++) {
                 original[n][ii] = new MonkeyButton (n, ii) ;
@@ -427,10 +461,18 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (vertical) 
-            g.drawLine (this.getWidth()/2, 0, this.getWidth()/2, this.getHeight()) ;
-        else
-            g.drawLine (0, this.getHeight()/2, this.getWidth(), this.getHeight()/2) ;
+        if (!vertical) {
+            if (!isMirror)
+                g.drawLine (this.getWidth()-1, 0, this.getWidth()-1, this.getHeight()) ;
+            else
+                g.drawLine (0, 0, 0, this.getHeight()) ;
+        }
+        else {
+            if (isMirror)
+                g.drawLine (0, 0, this.getWidth(), 0) ;
+            else
+                g.drawLine (0, this.getHeight()-1, this.getWidth(), this.getHeight()-1) ;
+        }
     }
 
     @Override

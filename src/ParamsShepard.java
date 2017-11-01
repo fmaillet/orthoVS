@@ -686,6 +686,6 @@ class DrawTimer extends Thread {
             progressBar.setValue((int) seconds);
             progressBar.repaint () ;
             try { sleep ( 100 ) ;} catch (Exception e) {}
-        } while (seconds < durée ) ;
+        } while (seconds < durée | !Thread.currentThread().isInterrupted()) ;
     }
 }
