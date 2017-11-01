@@ -1,3 +1,0 @@
-LaunchSymetry
-ParamsSymetry
-GrilleSymetry

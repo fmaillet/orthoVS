@@ -1,4 +1,0 @@
-DoubleCadre
-ParamsFeature
-LaunchFeature
-JLabelFeature

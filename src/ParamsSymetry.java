@@ -13,6 +13,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.awt.event.KeyEvent.VK_SPACE;
 import java.awt.event.KeyListener;
 import java.awt.image.MemoryImageSource;
 import static java.lang.Thread.sleep;
@@ -25,6 +26,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -369,6 +372,10 @@ class LaunchSymetry extends Thread {
         //On lance le timer
         DrawTimer timerThrd = new DrawTimer (progressBar, tempsDebut, this.durée) ;
         
+        //On initialise les grilles
+        originalGrid.randomInit();
+        mirrorGrid.randomInit();
+            
         do {
             
             //On laisse un peu passer le temps...
@@ -404,17 +411,20 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
     //paramètres
     private boolean vertical ;
     private boolean isMirror ;
+    private int h, v ;
+    Random rand = new Random () ;
     //Pour sortir
     public boolean out = false ;
     //Cases
-    private MonkeyButton original[][] ;
-    private MonkeyButton mirror[][]   ;
+    private MonkeyButton[][] grid ;
     
     //Constructor
     GrilleSymetry (int i, int j, boolean vertical, boolean mirror) {
         //Paramètres
         this.vertical = vertical ;
         this.isMirror = mirror ;
+        this.h = i;
+        this.v = j ;
         //Taille du panel
         if (vertical) {
             int t = i ;
@@ -442,22 +452,43 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         setBorder(new EmptyBorder(10, 10, 10, 10) );
         
         //On crée les buttons
-        original = new MonkeyButton [i][j] ;
-        this.mirror = new MonkeyButton [i][j] ;
+        grid = new MonkeyButton [i][j] ;
         for (int n=0; n<i; n++)
             for (int ii=0; ii<j; ii++) {
-                original[n][ii] = new MonkeyButton (n, ii) ;
-                original[n][ii].setFont(new Font("Arial", Font.PLAIN, 36));
-                original[n][ii].setForeground(Color.GRAY);
-                original[n][ii].setVisible(true);
-                original[n][ii].addActionListener(this);
-                add (original[n][ii]) ;
+                grid[n][ii] = new MonkeyButton (n, ii) ;
+                //original[n][ii].setFont(new Font("Arial", Font.PLAIN, 36));
+                grid[n][ii].setBackground(Color.CYAN);
+                //original[n][ii].setEnabled(false);
+                grid[n][ii].setVisible(true);
+                if (isMirror)
+                    grid[n][ii].addActionListener(this);
+                add (grid[n][ii]) ;
+                //Test border
+                Border thickBorder = new LineBorder(Color.GRAY, 2);
+                grid[n][ii].setBorder(thickBorder);
             }
         
         //On affiche
         setVisible (true) ;
     }
     
+    public void randomInit () {
+        //On réinitialise
+        for (int i=0; i<grid.length; i++)
+            for (int j=0; j<grid[0].length; j++) 
+                grid[i][j].setBackground(Color.CYAN);
+        if (isMirror) return ;
+        //Nombre de cases à sélectionner
+        int n = rand.nextInt(grid.length * (grid[0].length - 1)) + 2 ;
+        int nn= 0 ;
+        do {
+            int i = rand.nextInt(grid.length) ;
+            int j = rand.nextInt(grid[0].length) ;
+            grid[i][j].setBackground(Color.CYAN.darker());
+            nn ++ ;
+        } while (nn < n) ;
+        
+    }
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -477,7 +508,15 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //Which one ?
+        Object source = e.getSource () ;
+        MonkeyButton j = (MonkeyButton) source ;
+        //Change color
+        if (j.getBackground() == Color.CYAN)
+            j.setBackground(Color.CYAN.darker());
+        else
+            j.setBackground(Color.CYAN);
+        //j.setOpaque(false);
     }
 
     @Override
@@ -491,6 +530,7 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         if (code == VK_ESCAPE) {    //Sortir de la boucle de test, revenir à l'écran de paramétrage
             out = true ;
         }
+        //if (code == VK_SPACE) randomInit() ;
     }
 
     @Override
