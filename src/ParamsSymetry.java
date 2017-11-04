@@ -1,24 +1,17 @@
 
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.awt.event.KeyEvent.VK_SPACE;
 import java.awt.event.KeyListener;
-import java.awt.image.MemoryImageSource;
 import static java.lang.Thread.sleep;
-import java.util.Date;
-import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -28,16 +21,6 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -148,7 +131,7 @@ public class ParamsSymetry extends javax.swing.JPanel {
         jPresent.setModel(new javax.swing.SpinnerNumberModel(2000, 500, 5000, 250));
         jPresent.setOpaque(false);
 
-        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4" }));
+        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4", "5 x 2", "5 x 3" }));
         jGridSize.setToolTipText("Taille de la grille");
 
         jLabel12.setText("(1 à 15 minutes)");
@@ -292,6 +275,9 @@ class LaunchSymetry extends Thread {
     
     //Paramètres
     Random rand = new Random () ;
+    static GrilleSymetry originalGrid ;
+    static GrilleSymetry mirrorGrid ;
+    static boolean symetrieVerticale ;
     
     LaunchSymetry (JPanel p, int size, int durée, int present) {
         this.p = p ;
@@ -347,12 +333,14 @@ class LaunchSymetry extends Thread {
             case 2 : h=4; v=2; break;
             case 3 : h=4; v=3; break;
             case 4 : h=4; v=4; break;
+            case 5 : h=5; v=2; break;
+            case 6 : h=5; v=3; break;
             default: h=4; v=4; break;
         }
         //Horizontal ou vertical ?
-        boolean vert = rand.nextBoolean() ;
-        GrilleSymetry originalGrid = new GrilleSymetry (v, h, vert, false) ;
-        GrilleSymetry mirrorGrid   = new GrilleSymetry (v, h, vert, true) ;
+        symetrieVerticale = rand.nextBoolean() ;
+        originalGrid = new GrilleSymetry (v, h, symetrieVerticale, false) ;
+        mirrorGrid   = new GrilleSymetry (v, h, symetrieVerticale, true) ;
         //On ajoute les grilles au JFrame
         OrthoVS.fen.getContentPane().add (originalGrid) ;
         OrthoVS.fen.getContentPane().add (mirrorGrid) ;
@@ -361,7 +349,7 @@ class LaunchSymetry extends Thread {
         //On écoute le clavier pour la touche ESC
         originalGrid.addKeyListener(originalGrid);
         //On positionne les éléments
-        if (vert)
+        if (symetrieVerticale)
             progressBar.setBounds(originalGrid.getX(), originalGrid.getY()-50, originalGrid.getWidth(), 20);
         else
             progressBar.setBounds(originalGrid.getX(), originalGrid.getY()-50, originalGrid.getWidth()*2, 20);
@@ -385,6 +373,8 @@ class LaunchSymetry extends Thread {
             //On reprend le focus pour la touche ESC
             originalGrid.requestFocusInWindow();
             
+            //Le papillon bouge
+            jButterfly.setLocation(jButterfly.getX()-1, jButterfly.getY()+1);
             //C'est la fin ?
             float seconds = (System.currentTimeMillis() - tempsDebut) / 1000F;
             //progressBar.setValue((int) seconds);
@@ -404,6 +394,29 @@ class LaunchSymetry extends Thread {
         OrthoVS.fen.setExtendedState(JFrame.NORMAL);
         OrthoVS.fen.repaint () ;
     }
+    
+    static public boolean checkForSymetry () {
+        int h = LaunchSymetry.originalGrid.grid.length ;
+        int v = LaunchSymetry.originalGrid.grid[0].length ;
+        
+        boolean isOK = true ;
+        int ii, jj ;
+        for (int i=0; i<h; i++)
+            for (int j=0; j<v; j++) {
+                if (symetrieVerticale) {
+                    ii = i ; jj = v-j-1 ;
+                }
+                else {
+                    ii = h-i-1 ; jj = j ;
+                }
+                    
+                if (originalGrid.grid[i][j].getBackground() != mirrorGrid.grid[ii][jj].getBackground() )
+                    isOK = false ;
+                //mirrorGrid.grid[ii][jj].setBackground(originalGrid.grid[i][j].getBackground() ) ; isOK = false ;
+            }
+        
+        return isOK ;
+    }
 }
 
 class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
@@ -414,13 +427,14 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
     private int h, v ;
     Random rand = new Random () ;
     //Pour sortir
-    public boolean out = false ;
+    static public boolean out = false ;
     //Cases
-    private MonkeyButton[][] grid ;
+    public MonkeyButton[][] grid ;
     
     //Constructor
     GrilleSymetry (int i, int j, boolean vertical, boolean mirror) {
         //Paramètres
+        this.out = false ;
         this.vertical = vertical ;
         this.isMirror = mirror ;
         this.h = i;
@@ -453,19 +467,25 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         
         //On crée les buttons
         grid = new MonkeyButton [i][j] ;
-        for (int n=0; n<i; n++)
-            for (int ii=0; ii<j; ii++) {
+        
+        for (int ii=0; ii<j; ii++)
+            for (int n=0; n<i; n++)
+                {
                 grid[n][ii] = new MonkeyButton (n, ii) ;
                 //original[n][ii].setFont(new Font("Arial", Font.PLAIN, 36));
                 grid[n][ii].setBackground(Color.CYAN);
-                //original[n][ii].setEnabled(false);
+                //Insérer numéros
+                /*if (!isMirror) grid[n][ii].setText("O"+n+ii);
+                else grid[n][ii].setText("M"+n+ii);*/
+                grid[n][ii].setBorder(new RoundedBorder(20));
+
                 grid[n][ii].setVisible(true);
                 if (isMirror)
                     grid[n][ii].addActionListener(this);
                 add (grid[n][ii]) ;
                 //Test border
-                Border thickBorder = new LineBorder(Color.GRAY, 2);
-                grid[n][ii].setBorder(thickBorder);
+                //Border thickBorder = new LineBorder(Color.GRAY, 2);
+                //grid[n][ii].setBorder(thickBorder);
             }
         
         //On affiche
@@ -484,7 +504,7 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         do {
             int i = rand.nextInt(grid.length) ;
             int j = rand.nextInt(grid[0].length) ;
-            grid[i][j].setBackground(Color.CYAN.darker());
+            grid[i][j].setBackground(Color.ORANGE);
             nn ++ ;
         } while (nn < n) ;
         
@@ -513,10 +533,15 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         MonkeyButton j = (MonkeyButton) source ;
         //Change color
         if (j.getBackground() == Color.CYAN)
-            j.setBackground(Color.CYAN.darker());
+            j.setBackground(Color.ORANGE);
         else
             j.setBackground(Color.CYAN);
-        //j.setOpaque(false);
+        validate () ;
+        //Check if symetry is OK !
+        if (LaunchSymetry.checkForSymetry ()) {
+            
+            out = true ;
+        }
     }
 
     @Override
@@ -539,3 +564,21 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
     }
     
 }
+
+class RoundedBorder implements Border {
+        int radius;
+        RoundedBorder(int radius) {
+            this.radius = radius;
+        }
+        public Insets getBorderInsets(Component c) {
+            return new Insets(this.radius+1, this.radius+1, this.radius+2, this.radius);
+        }
+        public boolean isBorderOpaque() {
+            return true;
+        }
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            g.drawRoundRect(x,y,width-1,height-1,radius,radius);
+        }
+
+    
+    }
