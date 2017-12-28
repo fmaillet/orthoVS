@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,11 +17,12 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.util.Random;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JProgressBar;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -38,6 +40,7 @@ public class ParamsSymetry extends javax.swing.JPanel {
      * Creates new form ParamsSaccade
      */
     JLabel icone ;
+        
     public ParamsSymetry(JLabel icone) {
         initComponents();
         this.icone = icone ;
@@ -131,7 +134,7 @@ public class ParamsSymetry extends javax.swing.JPanel {
         jPresent.setModel(new javax.swing.SpinnerNumberModel(2000, 500, 5000, 250));
         jPresent.setOpaque(false);
 
-        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4", "5 x 2", "5 x 3" }));
+        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4", "5 x 2", "5 x 3", "5 x 4", "5 x 5" }));
         jGridSize.setToolTipText("Taille de la grille");
 
         jLabel12.setText("(1 à 15 minutes)");
@@ -270,14 +273,22 @@ class LaunchSymetry extends Thread {
     Thread t ;    
     JPanel p ;
     int size, durée, present ;
-    JProgressBar progressBar ;
-    JButton jTime, jButterfly ;
+    JButton jButterfly ;
     
     //Paramètres
     Random rand = new Random () ;
     static GrilleSymetry originalGrid ;
     static GrilleSymetry mirrorGrid ;
     static boolean symetrieVerticale ;
+    
+    //Trphés
+    JLabel trophy[] ;
+    int trophyNumber = 0 ;
+    
+    //Progression de jeu
+    static public boolean newGame = false ;
+    //Butterfly
+    final ScheduledThreadPoolExecutor executor ;
     
     LaunchSymetry (JPanel p, int size, int durée, int present) {
         this.p = p ;
@@ -292,27 +303,17 @@ class LaunchSymetry extends Thread {
         OrthoVS.fen.validate () ;
         //OrthoVS.fen.chartPanelOK.setVisible(false);
         
-        //ProgressBar
-        progressBar = new JProgressBar();
-        progressBar.setMaximum(this.durée);
-        progressBar.setValue(0);
-        OrthoVS.fen.getContentPane().add (progressBar) ;
-        progressBar.setOpaque(false);
-        progressBar.setForeground(Color.PINK);
-       
-        //Icon time
-        jTime = new JButton ( UserInfo.iconTime ) ;
-        jTime.setBorderPainted(false);
-        jTime.setContentAreaFilled(false);
-        OrthoVS.fen.getContentPane ().add (jTime) ;
-        jTime.setVisible(true);
-        //Icon monkey
+        
+        
+
+        //Icon butterfly
         jButterfly = new JButton ( UserInfo.iconButterfly ) ;
         jButterfly.setBorderPainted(false);
         jButterfly.setContentAreaFilled(false);
         OrthoVS.fen.getContentPane ().add (jButterfly) ;
         jButterfly.setBounds(OrthoVS.fen.getContentPane().getWidth()-260 , 10 , 256, 256);
         jButterfly.setVisible(true);
+        executor = new ScheduledThreadPoolExecutor(1);
         
         //On lance le thread
         t = new Thread (this, "launchSymetry") ;
@@ -335,10 +336,15 @@ class LaunchSymetry extends Thread {
             case 4 : h=4; v=4; break;
             case 5 : h=5; v=2; break;
             case 6 : h=5; v=3; break;
-            default: h=4; v=4; break;
+            case 7 : h=5; v=4; break;
+            case 8 : h=5; v=5; break;
+            default: h=4; v=3; break;
         }
         //Horizontal ou vertical ?
-        symetrieVerticale = rand.nextBoolean() ;
+        if (size < 8)
+            symetrieVerticale = rand.nextBoolean() ;
+        else
+            symetrieVerticale = false ;
         originalGrid = new GrilleSymetry (v, h, symetrieVerticale, false) ;
         mirrorGrid   = new GrilleSymetry (v, h, symetrieVerticale, true) ;
         //On ajoute les grilles au JFrame
@@ -348,24 +354,35 @@ class LaunchSymetry extends Thread {
         mirrorGrid.validate () ;
         //On écoute le clavier pour la touche ESC
         originalGrid.addKeyListener(originalGrid);
-        //On positionne les éléments
-        if (symetrieVerticale)
-            progressBar.setBounds(originalGrid.getX(), originalGrid.getY()-50, originalGrid.getWidth(), 20);
-        else
-            progressBar.setBounds(originalGrid.getX(), originalGrid.getY()-50, originalGrid.getWidth()*2, 20);
-        jTime.setBounds(originalGrid.getX() - 35 , originalGrid.getY()-56, 32, 32);
+        
+        //Create trophy
+        trophy = new JLabel[5] ;
+        for (int i=0; i<5; i++) {
+            trophy[i] = new JLabel() ;
+            trophy[i].setIcon(new ImageIcon(MainFenetre.tinyTrophy));
+            if (symetrieVerticale)
+                trophy[i].setBounds(originalGrid.getX() + (i * 85) + (originalGrid.getWidth()-4*85-64)/2, originalGrid.getY() - 100 , 64, 64);
+            else
+                trophy[i].setBounds(originalGrid.getX() + (i * 85) + (2*originalGrid.getWidth()-4*85-64)/2, originalGrid.getY() - 100 , 64, 64);
+            OrthoVS.fen.getContentPane().add(trophy[i]) ;
+            trophy[i].setEnabled(false);
+        }
         //On redessine
         OrthoVS.fen.repaint () ;
         originalGrid.requestFocusInWindow();
-        //On lance le timer
-        DrawTimer timerThrd = new DrawTimer (progressBar, tempsDebut, this.durée) ;
+        
         
         //On initialise les grilles
         originalGrid.randomInit();
         mirrorGrid.randomInit();
+        
+        //Le papillon bouge
+        // voir https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
+        //pour avoir un rate variable
+        executor.scheduleAtFixedRate(() -> moveButterfly(),1000, 150, TimeUnit.MILLISECONDS);
             
         do {
-            
+            newGame = false ;
             //On laisse un peu passer le temps...
             try { sleep ( 250 ) ;} catch (Exception e) {}
             //Si ESC on sort
@@ -373,26 +390,36 @@ class LaunchSymetry extends Thread {
             //On reprend le focus pour la touche ESC
             originalGrid.requestFocusInWindow();
             
-            //Le papillon bouge
-            jButterfly.setLocation(jButterfly.getX()-1, jButterfly.getY()+1);
+            //On change la grille
+            if (newGame) {
+                originalGrid.randomInit();
+                mirrorGrid.randomInit();
+            }
             //C'est la fin ?
             float seconds = (System.currentTimeMillis() - tempsDebut) / 1000F;
             //progressBar.setValue((int) seconds);
             if (seconds > durée) notFin = false ;
         } while (notFin) ;
        
-        //On réaffiche les paramètres
-        if (timerThrd.isAlive()) timerThrd.interrupt();
+        //On arrête les threads en cours
+        //if (timerThrd.isAlive()) timerThrd.interrupt();
+        executor.shutdownNow() ;
+        //On nettoie l'affichage
+        for (int i=0; i<trophy.length; i++)
+            OrthoVS.fen.getContentPane().remove(trophy[i]) ;
         OrthoVS.fen.getContentPane().remove(originalGrid);
         OrthoVS.fen.getContentPane().remove(mirrorGrid);
-        OrthoVS.fen.getContentPane().remove(progressBar);
-        OrthoVS.fen.getContentPane().remove(jTime);
         OrthoVS.fen.getContentPane().remove(jButterfly);
         OrthoVS.fen.enableMenuBar(true);
         OrthoVS.fen.jPatient.setVisible (true) ;
         p.setVisible (true) ;
         OrthoVS.fen.setExtendedState(JFrame.NORMAL);
         OrthoVS.fen.repaint () ;
+    }
+    
+    private void moveButterfly () {
+        jButterfly.setLocation(jButterfly.getX()-2, jButterfly.getY()+1);
+        
     }
     
     static public boolean checkForSymetry () {
@@ -539,8 +566,7 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         validate () ;
         //Check if symetry is OK !
         if (LaunchSymetry.checkForSymetry ()) {
-            
-            out = true ;
+            LaunchSymetry.newGame = true ;
         }
     }
 

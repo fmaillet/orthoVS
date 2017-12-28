@@ -56,6 +56,9 @@ import org.jfree.data.xy.XYSeriesCollection;
  * @author Fred
  */
 public class MainFenetre extends JFrame implements ActionListener, MouseMotionListener, WindowListener, ChartMouseListener  {
+    
+    static public Image tinyTrophy ;
+    
     public MainFenetre () {
         setTitle ("orthoVisuo-Spatial ("+OrthoVS.user.getSoftVersion()+") - MODE DEMONSTRATION (NON CONNECTE)");
         //setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -79,6 +82,9 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         jPatient.setHorizontalAlignment(LEFT);
         jPatient.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         jPatient.setToolTipText("Cliquez pour afficher la synthèse") ;
+        
+        //Image du trophé
+        tinyTrophy = getToolkit().getImage(getClass().getResource("/Ressources/trophy-small.png"));
         
         //Bouton PDF
         Image imgPDF = getToolkit().getImage(getClass().getResource("Ressources/pdf-icon.png"));
