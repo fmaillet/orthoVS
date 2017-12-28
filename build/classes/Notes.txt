@@ -5,8 +5,10 @@
 - interrompre le timer si espace attendu
 - option "timer fluide ou pas" (pour les stressés du temps)
 
-v0.8.0
+v0.8.0 (en cours)
 - Symétrie : ok, manque délai du papillon
+- Monkey : grand écran ok
+- Rotation2D : ajout entrée menu
 
 v0.7 (validée)
 - Synthèse : préparation multi panel

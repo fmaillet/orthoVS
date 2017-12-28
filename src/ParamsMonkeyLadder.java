@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.util.Random;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import org.jfree.chart.ChartFactory;
@@ -243,6 +244,7 @@ public class ParamsMonkeyLadder extends javax.swing.JPanel {
         int present   = (Integer) jPresent.getValue() ;
         int durée =  (Integer) jDurée.getValue() ;
         //on lance l'activité
+        OrthoVS.fen.enableMenuBar(false);
         LaunchMonkeyLadder l = new LaunchMonkeyLadder (this, size, durée, present) ;
     }//GEN-LAST:event_jManualStartActionPerformed
 
@@ -289,9 +291,11 @@ class LaunchMonkeyLadder extends Thread {
         this.durée = durée * 60 ;
         this.present = present ;
         //On cache les menus
-        OrthoVS.fen.enableMenuBar(false);
+        //OrthoVS.fen.enableMenuBar(false);
+        OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         OrthoVS.fen.jPatient.setVisible (false) ;
         OrthoVS.fen.chartPanelOK.setVisible(false);
+        OrthoVS.fen.validate () ;
         //ProgressBar
         progressBar = new JProgressBar();
         progressBar.setMaximum(this.durée);
@@ -446,6 +450,8 @@ class LaunchMonkeyLadder extends Thread {
         OrthoVS.fen.chartPanelOK.setVisible(true);
         OrthoVS.fen.computeChartsMonkey(true);
         p.setVisible (true) ;
+        OrthoVS.fen.enableMenuBar(true);
+        OrthoVS.fen.setExtendedState(JFrame.NORMAL);
         OrthoVS.fen.repaint () ;
     }
 }

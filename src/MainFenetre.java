@@ -200,7 +200,10 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         symetryMenu.setEnabled(true);
         
         exeMenu.add (new JSeparator()) ;
-        shepardMenu = new JRadioButtonMenuItem ("Rotations") ;
+        rotation2D = new JRadioButtonMenuItem ("Rotations 2D") ;
+        exeMenu.add(rotation2D) ;
+        rotation2D.setEnabled(false);
+        shepardMenu = new JRadioButtonMenuItem ("Rotations 3D") ;
         exeMenu.add(shepardMenu) ;
         shepardMenu.addActionListener(this);
         shepardMenu.setEnabled(true);
@@ -291,6 +294,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
     JMenuItem eyeTrackDiag, eyeTrackCalibration ;
     JMenuItem comMenu, dcomMenu, editProMenu, fichesPatientsMenu, quitMenu, hMenu, aboutMenu  ;
     JRadioButtonMenuItem syntheseMenu, monkeyLadderMenu, associatedPairslMenu, empanSpatialMenu, spatialSearchMenu, symetryMenu, shepardMenu, featureMenu, polygonsMenu ;
+    JRadioButtonMenuItem rotation2D ;
     public static JCheckBoxMenuItem sndMenu ;
     //Nom du patient en cours
     JButton jPatient, jPDF ;
