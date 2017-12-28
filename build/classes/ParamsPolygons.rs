@@ -1,3 +1,0 @@
-LaunchPolygons
-DoubleCadreSimple
-ParamsPolygons

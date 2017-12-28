@@ -89,13 +89,13 @@ public class ParamsSymetry extends javax.swing.JPanel {
         jAutoStar = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel7 = new javax.swing.JLabel();
-        jPresent = new javax.swing.JSpinner();
+        jTrophy = new javax.swing.JSpinner();
         jGridSize = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
         jLabelGrid = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
+        jLabel8 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setOpaque(false);
@@ -129,10 +129,10 @@ public class ParamsSymetry extends javax.swing.JPanel {
         });
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel7.setText("Durée de présentation :");
+        jLabel7.setText("Un trophé pour ");
 
-        jPresent.setModel(new javax.swing.SpinnerNumberModel(2000, 500, 5000, 250));
-        jPresent.setOpaque(false);
+        jTrophy.setModel(new javax.swing.SpinnerNumberModel(5, 2, 5, 1));
+        jTrophy.setOpaque(false);
 
         jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4", "5 x 2", "5 x 3", "5 x 4", "5 x 5" }));
         jGridSize.setToolTipText("Taille de la grille");
@@ -146,8 +146,8 @@ public class ParamsSymetry extends javax.swing.JPanel {
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel5.setText("Durée de la série :");
 
-        jLabel13.setText("(ms)");
-        jLabel13.setEnabled(false);
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel8.setText("grilles");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -175,9 +175,9 @@ public class ParamsSymetry extends javax.swing.JPanel {
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jPresent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTrophy, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel13))
+                                        .addComponent(jLabel8))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabelGrid)
@@ -217,8 +217,8 @@ public class ParamsSymetry extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jPresent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13))
+                    .addComponent(jTrophy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8))
                 .addGap(21, 21, 21)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -231,14 +231,14 @@ public class ParamsSymetry extends javax.swing.JPanel {
 
     private void jManualStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jManualStartActionPerformed
         int size = (Integer) jGridSize.getSelectedIndex() ;
-        int present   = (Integer) jPresent.getValue() ;
+        int nbGrilles   = (Integer) jTrophy.getValue() ;
         int durée =  (Integer) jDurée.getValue() ;
         //on lance l'activité
         OrthoVS.fen.enableMenuBar(false);
         //OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         //OrthoVS.fen.repaint () ;
         
-        LaunchSymetry l = new LaunchSymetry (this, size, durée, present) ;
+        LaunchSymetry l = new LaunchSymetry (this, size, durée, nbGrilles) ;
     }//GEN-LAST:event_jManualStartActionPerformed
 
     private void jAutoStarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAutoStarActionPerformed
@@ -255,16 +255,16 @@ public class ParamsSymetry extends javax.swing.JPanel {
     public static javax.swing.JSpinner jDurée;
     private javax.swing.JComboBox<String> jGridSize;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel5;
     public static javax.swing.JLabel jLabel7;
+    public static javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabelGrid;
     private javax.swing.JButton jManualStart;
-    public static javax.swing.JSpinner jPresent;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     public static javax.swing.JLabel jTitle;
+    public static javax.swing.JSpinner jTrophy;
     // End of variables declaration//GEN-END:variables
 }
 
@@ -272,8 +272,11 @@ class LaunchSymetry extends Thread {
     
     Thread t ;    
     JPanel p ;
-    int size, durée, present ;
+    int size, durée ;
+    static int nbGrillesForTrophy ;
     JButton jButterfly ;
+    
+    static boolean notFin = true ;
     
     //Paramètres
     Random rand = new Random () ;
@@ -282,19 +285,21 @@ class LaunchSymetry extends Thread {
     static boolean symetrieVerticale ;
     
     //Trphés
-    JLabel trophy[] ;
-    int trophyNumber = 0 ;
+    static JLabel trophy[] ;
+    static int trophyNumber = 0 ;
+    static int threeCount = 0 ;
+    static SoundClips snd ;
     
     //Progression de jeu
     static public boolean newGame = false ;
     //Butterfly
     final ScheduledThreadPoolExecutor executor ;
     
-    LaunchSymetry (JPanel p, int size, int durée, int present) {
+    LaunchSymetry (JPanel p, int size, int durée, int nbGrilles) {
         this.p = p ;
         this.size = size ;
         this.durée = durée * 60 ;
-        this.present = present ;
+        this.nbGrillesForTrophy = nbGrilles ;
         //On cache les menus
         //OrthoVS.fen.enableMenuBar(false);
         OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -323,8 +328,6 @@ class LaunchSymetry extends Thread {
     @Override
     public void run () {
         
-        //On boucle sur la série
-        boolean notFin = true ;
         long tempsDebut = System.currentTimeMillis();
         //Taille des grilles
         int h, v ;
@@ -367,6 +370,8 @@ class LaunchSymetry extends Thread {
             OrthoVS.fen.getContentPane().add(trophy[i]) ;
             trophy[i].setEnabled(false);
         }
+        trophyNumber = 0 ;
+        
         //On redessine
         OrthoVS.fen.repaint () ;
         originalGrid.requestFocusInWindow();
@@ -380,7 +385,7 @@ class LaunchSymetry extends Thread {
         // voir https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
         //pour avoir un rate variable
         executor.scheduleAtFixedRate(() -> moveButterfly(),1000, 150, TimeUnit.MILLISECONDS);
-            
+        notFin = true ;  
         do {
             newGame = false ;
             //On laisse un peu passer le temps...
@@ -418,8 +423,15 @@ class LaunchSymetry extends Thread {
     }
     
     private void moveButterfly () {
+        int w = originalGrid.getWidth() ;
         jButterfly.setLocation(jButterfly.getX()-2, jButterfly.getY()+1);
-        
+        if (!symetrieVerticale) w = w * 2;
+        if (jButterfly.getX() < (originalGrid.getX()+w-20)) {
+            originalGrid.out = true ;
+            jButterfly.setVisible(false);
+            //notFin = false;
+        }
+            
     }
     
     static public boolean checkForSymetry () {
@@ -441,7 +453,13 @@ class LaunchSymetry extends Thread {
                     isOK = false ;
                 //mirrorGrid.grid[ii][jj].setBackground(originalGrid.grid[i][j].getBackground() ) ; isOK = false ;
             }
-        
+        if (isOK) threeCount++ ;
+        if (threeCount == nbGrillesForTrophy & trophyNumber<5) {
+            trophy[trophyNumber++].setEnabled(true);
+            threeCount = 0 ;
+            /*snd = new SoundClips (4) ; //bad
+            snd.start () ;*/
+        }
         return isOK ;
     }
 }
