@@ -410,11 +410,15 @@ class LaunchSymetry extends Thread {
         //if (timerThrd.isAlive()) timerThrd.interrupt();
         executor.shutdownNow() ;
         //On nettoie l'affichage
-        for (int i=0; i<trophy.length; i++)
-            OrthoVS.fen.getContentPane().remove(trophy[i]) ;
         OrthoVS.fen.getContentPane().remove(originalGrid);
         OrthoVS.fen.getContentPane().remove(mirrorGrid);
+        OrthoVS.fen.repaint () ;
+        snd = new SoundClips (3) ; //applauses
+        snd.start () ;
+        try { sleep ( 3000 ) ;} catch (Exception e) {}
         OrthoVS.fen.getContentPane().remove(jButterfly);
+        for (int i=0; i<trophy.length; i++)
+            OrthoVS.fen.getContentPane().remove(trophy[i]) ;
         OrthoVS.fen.enableMenuBar(true);
         OrthoVS.fen.jPatient.setVisible (true) ;
         p.setVisible (true) ;
@@ -457,8 +461,8 @@ class LaunchSymetry extends Thread {
         if (threeCount == nbGrillesForTrophy & trophyNumber<5) {
             trophy[trophyNumber++].setEnabled(true);
             threeCount = 0 ;
-            /*snd = new SoundClips (4) ; //bad
-            snd.start () ;*/
+            snd = new SoundClips (4) ; //bad
+            snd.start () ;
         }
         return isOK ;
     }

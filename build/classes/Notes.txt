@@ -6,7 +6,7 @@
 - option "timer fluide ou pas" (pour les stressés du temps)
 
 v0.8.0
-- Début symétrie
+- Symétrie : ok, manque délai du papillon
 
 v0.7 (validée)
 - Synthèse : préparation multi panel
