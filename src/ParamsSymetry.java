@@ -318,7 +318,7 @@ class LaunchSymetry extends Thread {
         OrthoVS.fen.getContentPane ().add (jButterfly) ;
         jButterfly.setBounds(OrthoVS.fen.getContentPane().getWidth()-260 , 10 , 256, 256);
         jButterfly.setVisible(true);
-        executor = new ScheduledThreadPoolExecutor(1);
+        executor = new ScheduledThreadPoolExecutor(2);
         
         //On lance le thread
         t = new Thread (this, "launchSymetry") ;
@@ -412,14 +412,19 @@ class LaunchSymetry extends Thread {
        
         //On arrête les threads en cours
         //if (timerThrd.isAlive()) timerThrd.interrupt();
-        executor.shutdownNow() ;
-        //On nettoie l'affichage
-        OrthoVS.fen.getContentPane().remove(originalGrid);
-        OrthoVS.fen.getContentPane().remove(mirrorGrid);
-        OrthoVS.fen.repaint () ;
+        
+        //On explose la grille
         snd = new SoundClips (3) ; //applauses
         snd.start () ;
-        try { sleep ( 2000 ) ;} catch (Exception e) {}
+        executor.scheduleAtFixedRate(() -> gridExplode(),10, 15, TimeUnit.MILLISECONDS);
+        //gridExplode() ;
+        try { sleep ( 2500 ) ;} catch (Exception e) {}
+        //On nettoie l'affichage
+        executor.shutdownNow() ;
+        OrthoVS.fen.getContentPane().remove(originalGrid);
+        OrthoVS.fen.getContentPane().remove(mirrorGrid);
+        //OrthoVS.fen.repaint () ;
+        
         OrthoVS.fen.getContentPane().remove(jButterfly);
         for (int i=0; i<trophy.length; i++)
             OrthoVS.fen.getContentPane().remove(trophy[i]) ;
@@ -436,12 +441,26 @@ class LaunchSymetry extends Thread {
         if (!symetrieVerticale) w = w * 2;
         if (jButterfly.getX() < (originalGrid.getX()+w-20)) {
             originalGrid.out = true ;
-            jButterfly.setVisible(false);
+            //jButterfly.setVisible(false);
             //notFin = false;
         }
-            
     }
     
+    private void gridExplode () {
+        Random rand = new Random () ; int x, y ;
+        x = originalGrid.getX() - rand.nextInt(10) + 2 ;
+        y = originalGrid.getY() - rand.nextInt(10) + 3 ;
+        originalGrid.setLocation(x, y);
+        
+        x = mirrorGrid.getX() + rand.nextInt(10) - 2 ;
+        y = mirrorGrid.getY() + rand.nextInt(10) - 3 ;
+        mirrorGrid.setLocation(x, y);
+        
+        x = jButterfly.getX() - rand.nextInt(5) - 3 ;
+        y = jButterfly.getY() + rand.nextInt(5) - 3 ;
+        jButterfly.setLocation(x, y);
+    }
+     
     static public boolean checkForSymetry () {
         int h = LaunchSymetry.originalGrid.grid.length ;
         int v = LaunchSymetry.originalGrid.grid[0].length ;
@@ -562,6 +581,16 @@ class GrilleSymetry extends JPanel implements ActionListener, KeyListener {
         } while (nn < n) ;
         
     }
+    
+    public void gridExplode () {
+        for (int i=0; i<grid.length; i++)
+            for (int j=0; j<grid[0].length; j++) {
+                    int x  = grid[i][j].getX() + 10 ;
+                    int y  = grid[i][j].getY() + 10 ;
+                    grid[i][j].setLocation (x, y) ;
+            }
+    }
+    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
