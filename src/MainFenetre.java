@@ -574,7 +574,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         xySeriesCollectionOK.addSeries(serieOK);
         //Donées temporaires
         Score score ;
-        int speed = 0 ;
+        double speed = 0 ;
         //pour chaque session...
         //pour chaque session...
         ListIterator<Session> it = UserInfo.resultatsSymetry.listIterator() ;
@@ -584,9 +584,12 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
             Session s = it.next() ;
             LinkedList<Score> l = (LinkedList<Score>) s.results ;
             score = l.getFirst() ;
-            speed = (int) (score.reponse / (score.tr_f - score.tr_i) / 1000 /60) ;
+            //System.out.println (score.reponse + " f: " + score.tr_f + " i: " + score.tr_i + " d: " + (score.tr_f - score.tr_i)) ;
+            //System.out.println ((double) (score.tr_f - score.tr_i) / 60000 ) ;
+            speed = (double) score.reponse / ((double)(score.tr_f - score.tr_i) / 60000 ) ;
+            //System.out.println (speed) ;
             //ON rajoute la vitesse dans le graphe
-            serieOK.add(nSession, score.reponse);
+            serieOK.add(nSession, Math.round(speed));
             nSession++ ;
         }
     }
