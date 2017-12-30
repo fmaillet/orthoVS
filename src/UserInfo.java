@@ -78,7 +78,7 @@ public class UserInfo {
     public static DialogJournal journal ;
     
     public String getSoftVersion () {
-        return "v.0.8.0 du 30/12/2017" ;
+        return "v.0.8.1beta du 30/12/2017" ;
     }
    
     public static void disposeAllResultats () {
@@ -93,6 +93,9 @@ public class UserInfo {
         
         resultatsShepard.clear () ;
         modifiedResultatsShepard = false ;
+        
+        resultatsSymetry.clear () ;
+        modifiedResultatsSymetry = false ;
     }
     
     static public boolean areThereModifiedResults () {
@@ -142,6 +145,8 @@ public class UserInfo {
             OrthoVS.fen.computeChartsPolygons(false) ;
         else if (OrthoVS.fen.shepardMenu.isSelected ())
             OrthoVS.fen.computeChartsShepard(false) ;
+        else if (OrthoVS.fen.symetryMenu.isSelected ())
+            OrthoVS.fen.computeChartsSymetry(false) ;
     }
 }
 

@@ -215,6 +215,8 @@ public class MySQLClass {
         UserInfo.modifiedResultatsPolygons = false ;
         if (UserInfo.resultatsShepard == null) UserInfo.resultatsShepard  = new LinkedList<Session> () ;
         UserInfo.modifiedResultatsShepard = false ;
+        if (UserInfo.resultatsSymetry == null) UserInfo.resultatsSymetry  = new LinkedList<Session> () ;
+        UserInfo.modifiedResultatsSymetry = false ;
         //On informe
         UserInfo.journal.addJournal ("Loading previous results (" + 
                 String.valueOf(System.currentTimeMillis()-debut ) + " ms)");
