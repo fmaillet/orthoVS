@@ -568,6 +568,27 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         //Si vide, rien à faire
         xySeriesCollectionOK.removeAllSeries();
         if (UserInfo.resultatsSymetry.size() == 0) return ;
+        
+        //Séries
+        serieOK = new XYSeries("Vitesse");
+        xySeriesCollectionOK.addSeries(serieOK);
+        //Donées temporaires
+        Score score ;
+        int speed = 0 ;
+        //pour chaque session...
+        //pour chaque session...
+        ListIterator<Session> it = UserInfo.resultatsSymetry.listIterator() ;
+        int nSession = 1 ;
+        while (it.hasNext()) {
+            //On boucle sur chaque score de la session
+            Session s = it.next() ;
+            LinkedList<Score> l = (LinkedList<Score>) s.results ;
+            score = l.getFirst() ;
+            speed = (int) (score.reponse / (score.tr_f - score.tr_i) / 1000 /60) ;
+            //ON rajoute la vitesse dans le graphe
+            serieOK.add(nSession, score.reponse);
+            nSession++ ;
+        }
     }
     
     public void computeChartsFeature (boolean b) {

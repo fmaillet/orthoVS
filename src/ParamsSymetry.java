@@ -13,6 +13,8 @@ import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import java.awt.event.KeyListener;
 import static java.lang.Thread.sleep;
+import java.util.Date;
+import java.util.LinkedList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -329,7 +331,6 @@ class LaunchSymetry extends Thread {
     @Override
     public void run () {
         
-        long tempsDebut = System.currentTimeMillis();
         //Taille des grilles
         int h, v ;
         switch (size) {
@@ -388,9 +389,15 @@ class LaunchSymetry extends Thread {
         //Calcul du rate
         int dx = jButterfly.getX() - (originalGrid.getX()+ originalGrid.getWidth() - 20) ;
         int d = this.durée * 2000 / dx ;
-        System.out.println (d) ;
         executor.scheduleAtFixedRate(() -> moveButterfly(),500, d, TimeUnit.MILLISECONDS);
         notFin = true ;  
+        //Score
+        Score score = new Score () ;
+        score.level = this.size ;
+        score.reponse = 0 ;
+        //Début
+        long tempsDebut = score.tr_i = System.currentTimeMillis();
+        //On boucle
         do {
             newGame = false ;
             //On laisse un peu passer le temps...
@@ -404,16 +411,28 @@ class LaunchSymetry extends Thread {
             if (newGame) {
                 originalGrid.randomInit();
                 mirrorGrid.randomInit();
+                score.reponse++ ;
             }
+            
             //C'est la fin ?
             float seconds = (System.currentTimeMillis() - tempsDebut) / 1000F;
             //progressBar.setValue((int) seconds);
             if (seconds > durée) notFin = false ;
         } while (notFin) ;
-       
-        //On arrête les threads en cours
-        //if (timerThrd.isAlive()) timerThrd.interrupt();
+        //temps de fin
+        score.tr_f = System.currentTimeMillis() ;
         
+        //Calcul du score
+        Session session = new Session () ;
+        session.date = new Date () ;
+        session.gridSize = this.size ;
+        LinkedList<Score> results = new LinkedList<Score> () ;
+        results.add(score); 
+        session.results = results ;
+        //On ajoute à l'ensemble des résultats
+        UserInfo.resultatsSymetry.add(session);
+        UserInfo.modifiedResultatsSymetry = true ;
+            
         //On explose la grille
         snd = new SoundClips (3) ; //applauses
         snd.start () ;

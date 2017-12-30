@@ -17,10 +17,13 @@ public class Score implements Serializable { //Un résultat individuel (= un fla
 
     int level ; // monkeyLadder : empan proposé
                 // feature : pareils initial (0 ou 1)
+                // symétry : taille de la grille (index)
     int reponse  ;  // monkeyLadder : bon jusqu'à...
                     // feature : 0 si nok, 1 si ok
+                    //symetry : nb de grilles validées
     int presentation ;  // monkeyLadder : temps de présentation
                         // feature : nbre d'items affichés
     long tr_i, tr_f ;   // monkeyLadder : temps de réponse initial et final
                         // feature : tr_f : tps de réponse (bonne ou mauvaise)
+                        // symetry : tps début et fin
 }
