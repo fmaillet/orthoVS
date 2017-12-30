@@ -384,7 +384,11 @@ class LaunchSymetry extends Thread {
         //Le papillon bouge
         // voir https://stackoverflow.com/questions/1519091/scheduledexecutorservice-with-variable-delay
         //pour avoir un rate variable
-        executor.scheduleAtFixedRate(() -> moveButterfly(),1000, 150, TimeUnit.MILLISECONDS);
+        //Calcul du rate
+        int dx = jButterfly.getX() - (originalGrid.getX()+ originalGrid.getWidth() - 20) ;
+        int d = this.durée * 2000 / dx ;
+        System.out.println (d) ;
+        executor.scheduleAtFixedRate(() -> moveButterfly(),500, d, TimeUnit.MILLISECONDS);
         notFin = true ;  
         do {
             newGame = false ;
@@ -415,7 +419,7 @@ class LaunchSymetry extends Thread {
         OrthoVS.fen.repaint () ;
         snd = new SoundClips (3) ; //applauses
         snd.start () ;
-        try { sleep ( 3000 ) ;} catch (Exception e) {}
+        try { sleep ( 2000 ) ;} catch (Exception e) {}
         OrthoVS.fen.getContentPane().remove(jButterfly);
         for (int i=0; i<trophy.length; i++)
             OrthoVS.fen.getContentPane().remove(trophy[i]) ;
