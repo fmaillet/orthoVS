@@ -78,7 +78,7 @@ public class UserInfo {
     public static DialogJournal journal ;
     
     public String getSoftVersion () {
-        return "v.0.8.0beta du 30/12/2017" ;
+        return "v.0.8.0 du 30/12/2017" ;
     }
    
     public static void disposeAllResultats () {

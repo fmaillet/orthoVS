@@ -571,6 +571,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         
         //Séries
         serieOK = new XYSeries("Vitesse");
+        serieOK.setDescription("vitesse");
         xySeriesCollectionOK.addSeries(serieOK);
         //Donées temporaires
         Score score ;

@@ -144,6 +144,9 @@ public class MySQLClass {
         if (UserInfo.modifiedResultatsShepard) {
             SaveShepThrd rg = new SaveShepThrd () ;
         }
+        if (UserInfo.modifiedResultatsSymetry) {
+            SaveSymetryThrd rg = new SaveSymetryThrd () ;
+        }
     }
     
     //Test lire les datats
@@ -154,7 +157,7 @@ public class MySQLClass {
         //On va chercher les données
         if (connect () != null) {
             try {
-                String updateSQL = "SELECT VS_MONK, VS_FEAT, VS_POLY, VS_SHEP from Patients WHERE ID = " + UserInfo.currentPatient ;
+                String updateSQL = "SELECT VS_MONK, VS_FEAT, VS_POLY, VS_SHEP, VS_SYM from Patients WHERE ID = " + UserInfo.currentPatient ;
                 PreparedStatement pstmt = connection.prepareStatement(updateSQL) ;
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
@@ -191,6 +194,14 @@ public class MySQLClass {
                             UserInfo.resultatsShepard = (LinkedList) in.readObject() ;
                         }
                     } catch (Exception e) {UserInfo.journal.addJournal("loading Shepard : " + e.toString()) ;}
+                    //Résultats Symetry
+                    try {
+                        input = rs.getBinaryStream("VS_SYM") ;
+                        if (input.available() > 0) {
+                            ObjectInput in = new ObjectInputStream(input);
+                            UserInfo.resultatsSymetry = (LinkedList) in.readObject() ;
+                        }
+                    } catch (Exception e) {UserInfo.journal.addJournal("loading Symetry : " + e.toString()) ;}
                 }
                 pstmt.close () ;
             } catch (Exception e) {UserInfo.journal.addJournal("loading: " + e.toString()) ;}
@@ -379,6 +390,48 @@ class SaveMonkThrd implements Runnable {
             } catch (Exception e) {UserInfo.journal.addJournal(e.toString()) ;}
         }
         UserInfo.journal.addJournal ("Saving ResultatsMonk (" + 
+                String.valueOf(System.currentTimeMillis()-debut ) + " ms)");
+    }
+    
+}
+
+class SaveSymetryThrd implements Runnable {
+    
+    Thread t ;
+
+    SaveSymetryThrd () {
+        t = new Thread (this, "savingSymetry") ;
+        t.start ( ) ;
+        //On force l'attente de la fin de la sauvegarde
+        //try { t.join();} catch (InterruptedException e) {}
+    }
+    
+    @Override
+    public void run() {
+        //On informe
+        //UserInfo.journal.addJournal("Saving ResultatsRG.") ;
+        long debut = System.currentTimeMillis();
+        //connect () ;
+        if (OrthoVS.mySQLConnection.connect () != null) {
+            try { 
+                String updateSQL = "UPDATE Patients SET VS_SYM = ? WHERE ID = " + OrthoVS.user.currentPatient ;
+                PreparedStatement pstmt = OrthoVS.mySQLConnection.connection.prepareStatement(updateSQL) ;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(UserInfo.resultatsSymetry);
+                byte[] bytes = bos.toByteArray();
+                InputStream input = new ByteArrayInputStream(bytes) ;
+                
+                pstmt.setBinaryStream(1, input);
+                pstmt.executeUpdate() ;
+                pstmt.close () ;
+                //On ralenti le thread pour tester une comm lente
+                //Thread.sleep (10000) ;
+                UserInfo.modifiedResultatsSymetry = false ;
+                
+            } catch (Exception e) {UserInfo.journal.addJournal(e.toString()) ;}
+        }
+        UserInfo.journal.addJournal ("Saving ResultatsSym (" + 
                 String.valueOf(System.currentTimeMillis()-debut ) + " ms)");
     }
     
