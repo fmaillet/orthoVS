@@ -305,6 +305,7 @@ class LaunchSymetry extends Thread {
         OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         OrthoVS.fen.jPatient.setVisible (false) ;
         OrthoVS.fen.symetryParam.setVisible(false);
+        OrthoVS.fen.chartPanelOK.setVisible(false);
         OrthoVS.fen.validate () ;
         //OrthoVS.fen.chartPanelOK.setVisible(false);
         
@@ -430,6 +431,8 @@ class LaunchSymetry extends Thread {
             OrthoVS.fen.getContentPane().remove(trophy[i]) ;
         OrthoVS.fen.enableMenuBar(true);
         OrthoVS.fen.jPatient.setVisible (true) ;
+        OrthoVS.fen.chartPanelOK.setVisible(true);
+        OrthoVS.fen.computeChartsSymetry(true);
         p.setVisible (true) ;
         OrthoVS.fen.setExtendedState(JFrame.NORMAL);
         OrthoVS.fen.repaint () ;

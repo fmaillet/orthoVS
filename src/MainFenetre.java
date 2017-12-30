@@ -564,6 +564,12 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         addChartPopupDelMenu (chartPanelOK, UserInfo.resultatsMonkey) ;
     }
     
+    public void computeChartsSymetry (boolean b) {
+        //Si vide, rien à faire
+        xySeriesCollectionOK.removeAllSeries();
+        if (UserInfo.resultatsSymetry.size() == 0) return ;
+    }
+    
     public void computeChartsFeature (boolean b) {
         //Si vide, rien à faire
         xySeriesCollectionOK.removeAllSeries();
@@ -781,6 +787,31 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         symetryParam.setBounds (getContentPane ().getWidth()/2-431/2,getContentPane ().getHeight()/2-513/2,431,513) ;
         getContentPane ().add (symetryParam) ;
         symetryParam.setVisible(true);
+        
+        //Données du graphique
+        xySeriesCollectionOK = new XYSeriesCollection();
+        // FreeChart...
+        JFreeChart chartOK = ChartFactory.createXYLineChart("Vitesse (grilles/mn)", "", "", xySeriesCollectionOK,
+            PlotOrientation.VERTICAL, true, false, false);
+        chartOK.setBackgroundPaint(new Color(0,204 , 204));
+        chartPanelOK = new ChartPanel( chartOK ) ;
+        getContentPane ().add (chartPanelOK) ;
+        chartPanelOK.setBounds(30, 90, 270, 250);
+        chartPanelOK.setVisible(true);
+        chartPanelOK.setPopupMenu(null);
+        //Présentation du graph OK
+        final XYPlot plot = chartOK.getXYPlot();
+        plot.setBackgroundPaint(Color.lightGray);
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+        domainAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        XYLineAndShapeRenderer xyLineAndShapeRenderer = new XYLineAndShapeRenderer() ;
+        xyLineAndShapeRenderer.setBaseToolTipGenerator(new CustomXYToolTipGenerator());
+        plot.setRenderer(xyLineAndShapeRenderer);
+        
+        //On affiche les données (s'il y en a)
+        computeChartsSymetry(false) ;
         
         //On affiche
         revalidate () ;

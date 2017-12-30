@@ -37,6 +37,7 @@ public class UserInfo {
         resultatsFeature = new LinkedList<Session> () ;
         resultatsPolygons = new LinkedList<Session> () ;
         resultatsShepard = new LinkedList<Session> () ;
+        resultatsSymetry = new LinkedList<Session> () ;
         //On récupère la macAdress pour la connection
         try {
             InetAddress ip = InetAddress.getLocalHost();
@@ -64,6 +65,8 @@ public class UserInfo {
     static public boolean    modifiedResultatsPolygons = false ;
     static public LinkedList resultatsShepard ; //Résultats "Rotation Shepard"
     static public boolean    modifiedResultatsShepard = false ;
+    static public LinkedList resultatsSymetry ; //Résultats "Simétrie du papillon"
+    static public boolean    modifiedResultatsSymetry = false ;
     
     static public LinkedList listePatients ;
     static public int currentPatient ;
@@ -93,7 +96,7 @@ public class UserInfo {
     }
     
     static public boolean areThereModifiedResults () {
-        return modifiedResultatsMonkey && modifiedResultatsFeature && modifiedResultatsPolygons  && modifiedResultatsShepard ;
+        return modifiedResultatsMonkey && modifiedResultatsFeature && modifiedResultatsPolygons  && modifiedResultatsShepard  && modifiedResultatsSymetry ;
     }
     
     public void clearListePatients () {
