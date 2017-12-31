@@ -1,6 +1,12 @@
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.VK_ESCAPE;
+import java.awt.event.KeyListener;
 import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.LinkedList;
@@ -51,12 +57,12 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         addComponentListener ( new ComponentAdapter () {
             public void componentShown ( ComponentEvent e )
             {
-                icone.setVisible(true);
+                icone.setLocation( OrthoVS.fen.getContentPane ().getWidth()-300, 40);
             }
 
             public void componentHidden ( ComponentEvent e )
             {
-                icone.setVisible(false);
+                //icone.setVisible(false);
             }
         } );    
     }
@@ -129,7 +135,7 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         jLabel12.setEnabled(false);
 
         jLabelGrid.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabelGrid.setText("Taille Grille :");
+        jLabelGrid.setText("Taille Item :");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel5.setText("Durée de la série :");
@@ -226,7 +232,7 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         //OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         //OrthoVS.fen.repaint () ;
         
-        LaunchRotation2D l = new LaunchRotation2D (this, size, durée, nbGrilles) ;
+        LaunchRotation2D l = new LaunchRotation2D (this, size, durée, nbGrilles, icone) ;
     }//GEN-LAST:event_jManualStartActionPerformed
 
     private void jAutoStarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAutoStarActionPerformed
@@ -256,19 +262,23 @@ public class ParamsRotation2D extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 }
 
-class LaunchRotation2D extends Thread {
+class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     
     Thread t ;    
     JPanel p ;
     int size, durée ;
     static int nbGrillesForTrophy ;
-    JButton jButterfly ;
+    JLabel jIconRotation2D ;
     
     static boolean notFin = true ;
     
+    //Eléments affichés
+    CadreSimple cadre ;
+    JButton jNormal, jMiroir ;
+    
     //Paramètres
     Random rand = new Random () ;
-    
+    boolean escPressed ;
     
     //Trphés
     static JLabel trophy[] ;
@@ -279,13 +289,17 @@ class LaunchRotation2D extends Thread {
     //Progression de jeu
     static public boolean newGame = false ;
     //Butterfly
-    final ScheduledThreadPoolExecutor executor ;
+    //final ScheduledThreadPoolExecutor executor ;
     
-    LaunchRotation2D (JPanel p, int size, int durée, int nbGrilles) {
+    LaunchRotation2D (JPanel p, int size, int durée, int nbGrilles, JLabel icon) {
         this.p = p ;
-        this.size = size ;
+        this.size = 300 ;
         this.durée = durée * 60 ;
         this.nbGrillesForTrophy = nbGrilles ;
+        this.jIconRotation2D = icon ;
+        
+        escPressed = false ;
+        
         //On cache les menus
         //OrthoVS.fen.enableMenuBar(false);
         OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -295,17 +309,28 @@ class LaunchRotation2D extends Thread {
         OrthoVS.fen.validate () ;
         //OrthoVS.fen.chartPanelOK.setVisible(false);
         
-        
-        
+        //Cadre
+        cadre = new CadreSimple (this.size) ;
+        cadre.setBounds((OrthoVS.fen.getContentPane().getWidth()/2-(this.size)/2), (OrthoVS.fen.getContentPane().getHeight()/2-(this.size)), this.size, this.size);
+        OrthoVS.fen.getContentPane().add (cadre) ;
+        cadre.validate () ;
+        //Les deux boutons
+        jNormal = new JButton ("Normal") ;
+        jNormal.setBackground(Color.GREEN); jNormal.setFont(new java.awt.Font("Tahoma", 1, 18));
+        jNormal.setBounds(cadre.getX(), cadre.getY() + cadre.getHeight() + 10, cadre.getWidth()/2-2, 35);
+        jNormal.setVisible(true); jNormal.addActionListener(this);
+        OrthoVS.fen.getContentPane().add (jNormal) ;
+        jMiroir = new JButton ("Miroir") ;
+        jMiroir.setBackground(Color.RED.brighter()); jMiroir.setFont(new java.awt.Font("Tahoma", 1, 18));
+        jMiroir.setBounds(jNormal.getX()+jNormal.getWidth()+4, cadre.getY() + cadre.getHeight() + 10, cadre.getWidth()/2-2, 35);
+        jMiroir.setVisible(true); jMiroir.addActionListener(this);
+        OrthoVS.fen.getContentPane().add (jMiroir) ;
 
         //Icon butterfly
-        jButterfly = new JButton ( UserInfo.iconRotation2D ) ;
-        jButterfly.setBorderPainted(false);
-        jButterfly.setContentAreaFilled(false);
-        OrthoVS.fen.getContentPane ().add (jButterfly) ;
-        jButterfly.setBounds(OrthoVS.fen.getContentPane().getWidth()-300 , 20 , 283, 276);
-        jButterfly.setVisible(true);
-        executor = new ScheduledThreadPoolExecutor(2);
+        this.jIconRotation2D.setLocation( OrthoVS.fen.getContentPane ().getWidth()-300, 40) ;
+        
+        //On écoute le clavier
+        OrthoVS.fen.addKeyListener (this) ;
         
         //On lance le thread
         t = new Thread (this, "launchSymetry") ;
@@ -336,7 +361,7 @@ class LaunchRotation2D extends Thread {
         for (int i=0; i<5; i++) {
             trophy[i] = new JLabel() ;
             trophy[i].setIcon(new ImageIcon(MainFenetre.tinyTrophy));
-            
+            trophy[i].setBounds(20, 100 + 85*i, 64,64) ;
             OrthoVS.fen.getContentPane().add(trophy[i]) ;
             trophy[i].setEnabled(false);
         }
@@ -360,15 +385,17 @@ class LaunchRotation2D extends Thread {
         long tempsDebut = score.tr_i = System.currentTimeMillis();
         //On boucle
         do {
+            OrthoVS.fen.requestFocus();
             newGame = false ;
             //On laisse un peu passer le temps...
             try { sleep ( 250 ) ;} catch (Exception e) {}
-            //Si ESC on sort
+            
             //if (originalGrid.out) notFin = false ;
             //On reprend le focus pour la touche ESC
             //originalGrid.requestFocusInWindow();
             
-           
+            //Si appui sur ESC
+            if (escPressed) break ;
             
             //C'est la fin ?
             float seconds = (System.currentTimeMillis() - tempsDebut) / 1000F;
@@ -377,6 +404,13 @@ class LaunchRotation2D extends Thread {
         } while (notFin) ;
         //temps de fin
         score.tr_f = System.currentTimeMillis() ;
+        //On supprime les trucs inutiles
+        OrthoVS.fen.getContentPane().remove(cadre);
+        OrthoVS.fen.getContentPane().remove(jNormal);
+        OrthoVS.fen.getContentPane().remove(jMiroir);
+        //OrthoVS.fen.getContentPane().remove(jButterfly);
+        for (int i=0; i<trophy.length; i++)
+            OrthoVS.fen.getContentPane().remove(trophy[i]) ;
         
         //Calcul du score
         Session session = new Session () ;
@@ -386,31 +420,67 @@ class LaunchRotation2D extends Thread {
         results.add(score); 
         session.results = results ;
         //On ajoute à l'ensemble des résultats
-        UserInfo.resultatsSymetry.add(session);
-        UserInfo.modifiedResultatsSymetry = true ;
+        UserInfo.resultatsRotation2D.add(session);
+        UserInfo.modifiedResultatsRotation2D = true ;
             
-        //On explose la grille
+        //On applaudi
         snd = new SoundClips (3) ; //applauses
         snd.start () ;
         
         //gridExplode() ;
-        try { sleep ( 2500 ) ;} catch (Exception e) {}
-        //On nettoie l'affichage
-        executor.shutdownNow() ;
+        //try { sleep ( 2500 ) ;} catch (Exception e) {}
+        //On stoppe les timers
+        //executor.shutdownNow() ;
         
         //OrthoVS.fen.repaint () ;
         
-        OrthoVS.fen.getContentPane().remove(jButterfly);
+        OrthoVS.fen.setExtendedState(JFrame.NORMAL);
         for (int i=0; i<trophy.length; i++)
             OrthoVS.fen.getContentPane().remove(trophy[i]) ;
         OrthoVS.fen.enableMenuBar(true);
         OrthoVS.fen.jPatient.setVisible (true) ;
         OrthoVS.fen.chartPanelOK.setVisible(true);
-        OrthoVS.fen.computeChartsSymetry(true);
+        OrthoVS.fen.computeChartsRotation2D(true);
         p.setVisible (true) ;
-        OrthoVS.fen.setExtendedState(JFrame.NORMAL);
+        
         OrthoVS.fen.repaint () ;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //score.tr_f = System.currentTimeMillis() - tempsDebut ;
+        int code = e.getKeyCode () ;
+        if (code == VK_ESCAPE) {    //Sortir de la boucle de test, revenir à l'écran de paramétrage
+            escPressed = true ;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
 
+class CadreSimple extends JPanel {
+    int size ;
+    
+    public CadreSimple (int size) {
+        this.size = size ;
+        this.setSize(size, size);
+        setBackground(Color.CYAN);
+        
+        //On affiche
+        setVisible (true) ;
+    }
+}

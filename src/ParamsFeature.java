@@ -1,21 +1,14 @@
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import java.awt.event.KeyListener;
-import java.awt.image.MemoryImageSource;
-import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.LinkedList;
 import javax.swing.JButton;
@@ -35,13 +28,6 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import static java.lang.Thread.sleep;
-import static java.lang.Thread.sleep;
-import static java.lang.Thread.sleep;
-import static java.lang.Thread.sleep;
-import static java.lang.Thread.sleep;
-import static java.lang.Thread.sleep;
-import static java.lang.Thread.sleep;
-import javax.swing.BorderFactory;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
