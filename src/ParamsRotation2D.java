@@ -278,7 +278,7 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     
     //Paramètres
     Random rand = new Random () ;
-    boolean escPressed ;
+    boolean escPressed, nextItem ;
     
     //Trphés
     static JLabel trophy[] ;
@@ -311,7 +311,7 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         
         //Cadre
         cadre = new CadreSimple (this.size) ;
-        cadre.setBounds((OrthoVS.fen.getContentPane().getWidth()/2-(this.size)/2), (OrthoVS.fen.getContentPane().getHeight()/2-(this.size)), this.size, this.size);
+        cadre.setLocation((OrthoVS.fen.getContentPane().getWidth()/2-(this.size)/2), (OrthoVS.fen.getContentPane().getHeight()/2-(this.size)));
         OrthoVS.fen.getContentPane().add (cadre) ;
         cadre.validate () ;
         //Les deux boutons
@@ -386,13 +386,14 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         //On boucle
         do {
             OrthoVS.fen.requestFocus();
-            newGame = false ;
-            //On laisse un peu passer le temps...
-            try { sleep ( 250 ) ;} catch (Exception e) {}
-            
-            //if (originalGrid.out) notFin = false ;
-            //On reprend le focus pour la touche ESC
-            //originalGrid.requestFocusInWindow();
+            cadre.resetValue();
+            nextItem = false ;
+                        
+            //On attend la saisie de l'utilisateur
+            do {
+                try { sleep ( 150 ) ;} catch (Exception e) {}
+                if (escPressed) break ;
+            } while (! nextItem) ;
             
             //Si appui sur ESC
             if (escPressed) break ;
@@ -401,6 +402,8 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
             float seconds = (System.currentTimeMillis() - tempsDebut) / 1000F;
             //progressBar.setValue((int) seconds);
             if (seconds > durée) notFin = false ;
+            //On laisse un peu la réponse...
+            try { sleep ( 100 ) ;} catch (Exception e) {}
         } while (notFin) ;
         //temps de fin
         score.tr_f = System.currentTimeMillis() ;
@@ -448,7 +451,21 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        JButton b = (JButton) e.getSource() ;
+        
+        //Bonne réponse ?
+        if ( (b == jNormal && cadre.isOrientedNormal) || (b == jMiroir && ! cadre.isOrientedNormal)) {
+            cadre.setBackground(Color.GREEN);
+            
+            snd = new SoundClips (4) ; //GOOD
+            snd.start () ;
+        }
+        else {
+            cadre.setBackground(Color.RED.brighter());
+            snd = new SoundClips (5) ; //GOOD
+            snd.start () ;
+        }
+        nextItem = true ;
     }
 
     @Override
@@ -474,13 +491,35 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
 
 class CadreSimple extends JPanel {
     int size ;
+    JLabel label ;
+    boolean isOrientedNormal ;
+    Random rand ;
     
     public CadreSimple (int size) {
         this.size = size ;
         this.setSize(size, size);
         setBackground(Color.CYAN);
         
+        rand = new Random () ;
+        
         //On affiche
         setVisible (true) ;
+        //Label
+        label = new JLabel ("") ;
+        //label.setBackground(Color.red);
+        //label.setOpaque(true);
+        label.setSize(20, 20);
+        label.setLocation(this.getWidth()/2-20/2, this.getHeight()/2-20/2);
+        add(label) ;
+    }
+    
+    public void resetValue () {
+        isOrientedNormal = rand.nextBoolean() ;
+        setBackground(Color.CYAN);
+        if (isOrientedNormal)
+            label.setText("<html><div style='text-align: center;'>" + "N" + "</div></html>") ;
+        else
+            label.setText("<html><div style='text-align: center;'>" + "M" + "</div></html>") ;
+        //label.setLocation(this.getWidth()/2-20/2, this.getHeight()/2-20/2);
     }
 }
