@@ -577,6 +577,33 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         //Si vide, rien à faire
         xySeriesCollectionOK.removeAllSeries();
         if (UserInfo.resultatsRotation2D.size() == 0) return ;
+        
+        //Séries
+        serieOK = new XYSeries("Vitesse");
+        serieOK.setDescription("vitesse");
+        xySeriesCollectionOK.addSeries(serieOK);
+        //Donées temporaires
+        Score score ;
+        double speed = 0 ;
+        
+        //pour chaque session...
+        ListIterator<Session> it = UserInfo.resultatsRotation2D.listIterator() ;
+        int nSession = 1 ;
+        while (it.hasNext()) {
+            
+            //On boucle sur chaque score de la session
+            Session s = it.next() ;
+            LinkedList<Score> l = (LinkedList<Score>) s.results ;
+            score = l.getFirst() ;
+            //System.out.println (score.reponse + " f: " + score.tr_f + " i: " + score.tr_i + " d: " + (score.tr_f - score.tr_i)) ;
+            //System.out.println ((double) (score.tr_f - score.tr_i) / 60000 ) ;
+            speed = (double) score.reponse / ((double)(score.tr_f - score.tr_i) / 60000 ) ;
+            //System.out.println (speed) ;
+            //ON rajoute la vitesse dans le graphe
+            serieOK.add(nSession, Math.round(speed));
+            
+            nSession++ ;
+        }
     }
     
     public void computeChartsSymetry (boolean b) {
@@ -591,7 +618,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         //Donées temporaires
         Score score ;
         double speed = 0 ;
-        //pour chaque session...
+        
         //pour chaque session...
         ListIterator<Session> it = UserInfo.resultatsSymetry.listIterator() ;
         int nSession = 1 ;
@@ -886,6 +913,20 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         chartPanelOK.setBounds(30, 90, 270, 250);
         chartPanelOK.setVisible(true);
         chartPanelOK.setPopupMenu(null);
+        
+        //Présentation du graph OK
+        final XYPlot plot = chartOK.getXYPlot();
+        plot.setBackgroundPaint(Color.lightGray);
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+        domainAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        XYLineAndShapeRenderer xyLineAndShapeRenderer = new XYLineAndShapeRenderer() ;
+        xyLineAndShapeRenderer.setBaseToolTipGenerator(new CustomXYToolTipGenerator());
+        plot.setRenderer(xyLineAndShapeRenderer);
+        
+        //On affiche les données (s'il y en a)
+        computeChartsRotation2D(false) ;
         
         //On affiche
         revalidate () ;

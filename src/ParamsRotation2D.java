@@ -279,6 +279,7 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     //Paramètres
     Random rand = new Random () ;
     boolean escPressed, nextItem ;
+    Score score ;
     
     //Trphés
     static JLabel trophy[] ;
@@ -378,7 +379,7 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         
         notFin = true ;  
         //Score
-        Score score = new Score () ;
+        score = new Score () ;
         score.level = this.size ;
         score.reponse = 0 ;
         //Début
@@ -456,7 +457,7 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         //Bonne réponse ?
         if ( (b == jNormal && cadre.isOrientedNormal) || (b == jMiroir && ! cadre.isOrientedNormal)) {
             cadre.setBackground(Color.GREEN);
-            
+            score.reponse++ ;
             snd = new SoundClips (4) ; //GOOD
             snd.start () ;
         }
