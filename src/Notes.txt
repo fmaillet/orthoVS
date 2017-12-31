@@ -5,7 +5,7 @@
 - interrompre le timer si espace attendu
 - option "timer fluide ou pas" (pour les stressés du temps)
 
-v0.8.1 (en cours)
+v0.8.1 (31/12/2017)
 -symetry : corrected maj du graphe au chgt de patient
 
 v0.8.0 (30/12/2017)

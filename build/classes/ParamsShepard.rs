@@ -1,4 +1,0 @@
-DrawTimer
-DoubleCadreShepard
-ParamsShepard
-LaunchShepard

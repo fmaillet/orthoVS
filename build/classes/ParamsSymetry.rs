@@ -1,4 +1,0 @@
-LaunchSymetry
-ParamsSymetry
-GrilleSymetry
-RoundedBorder
