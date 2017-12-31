@@ -101,6 +101,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         UserInfo.iconFeature = new ImageIcon ( getToolkit().getImage(getClass().getResource("Ressources/feature2.png")) );
         UserInfo.iconShepard = new ImageIcon ( getToolkit().getImage(getClass().getResource("Ressources/shepard.png")) );
         UserInfo.iconButterfly = new ImageIcon ( getToolkit().getImage(getClass().getResource("Ressources/butterfly.png")) );
+        UserInfo.iconRotation2D = new ImageIcon ( getToolkit().getImage(getClass().getResource("Ressources/rotation2D.png")) );
         
         //Icone
         Image img = getToolkit().getImage(getClass().getResource("Ressources/Shepard/1/1A.png"));
@@ -200,9 +201,9 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         symetryMenu.setEnabled(true);
         
         exeMenu.add (new JSeparator()) ;
-        rotation2D = new JRadioButtonMenuItem ("Rotations 2D") ;
-        exeMenu.add(rotation2D) ;
-        rotation2D.setEnabled(false);
+        rotation2DMenu = new JRadioButtonMenuItem ("Rotations 2D") ;
+        exeMenu.add(rotation2DMenu) ;
+        rotation2DMenu.addActionListener(this);
         shepardMenu = new JRadioButtonMenuItem ("Rotations 3D") ;
         exeMenu.add(shepardMenu) ;
         shepardMenu.addActionListener(this);
@@ -229,6 +230,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         group.add (empanSpatialMenu) ;
         group.add (spatialSearchMenu) ;
         group.add (symetryMenu) ;
+        group.add (rotation2DMenu) ;
         group.add (shepardMenu) ;
         group.add (featureMenu) ;
         group.add (polygonsMenu) ;
@@ -294,7 +296,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
     JMenuItem eyeTrackDiag, eyeTrackCalibration ;
     JMenuItem comMenu, dcomMenu, editProMenu, fichesPatientsMenu, quitMenu, hMenu, aboutMenu  ;
     JRadioButtonMenuItem syntheseMenu, monkeyLadderMenu, associatedPairslMenu, empanSpatialMenu, spatialSearchMenu, symetryMenu, shepardMenu, featureMenu, polygonsMenu ;
-    JRadioButtonMenuItem rotation2D ;
+    JRadioButtonMenuItem rotation2DMenu ;
     public static JCheckBoxMenuItem sndMenu ;
     //Nom du patient en cours
     JButton jPatient, jPDF ;
@@ -311,6 +313,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
     ParamsPolygons polygonsParam ;
     ParamsShepard shepardParam ;
     ParamsSymetry symetryParam ;
+    ParamsRotation2D rotation2DParam ;
     
     Runtime runtime ;
     
@@ -352,6 +355,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         else if ( source == polygonsMenu ) initPolygons () ;
         else if ( source == shepardMenu ) initShepard () ;
         else if ( source == symetryMenu ) initSymetry () ;
+        else if ( source == rotation2DMenu ) initRotation2D () ;
         
         else if (source == aboutMenu) aPropos () ;
         else if (source == hMenu) { //Journal
@@ -398,6 +402,11 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         if (monkeyLadderParam != null) {
             monkeyLadderParam = null ;
             chartPanelOK = null ;
+        }
+        //Rotation2D
+        if (rotation2DParam != null) {
+            rotation2DParam = null ;
+            //chartPanelOK = null ;
         }
         //Symetry
         if (symetryParam != null) {
@@ -562,6 +571,12 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         }
         //On autorise le clic droit (suppression)
         addChartPopupDelMenu (chartPanelOK, UserInfo.resultatsMonkey) ;
+    }
+    
+    public void computeChartsRotation2D (boolean b) {
+        //Si vide, rien à faire
+        xySeriesCollectionOK.removeAllSeries();
+        if (UserInfo.resultatsRotation2D.size() == 0) return ;
     }
     
     public void computeChartsSymetry (boolean b) {
@@ -843,9 +858,43 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         repaint () ;
     }
     
+    void initRotation2D () {
+        //Si c'est dékjà affiché, on fait rien
+        if (rotation2DParam != null) return ;
+        //Sinon, on efface tout
+        disposePreviousPanels () ;
+        //Icone de l'activité
+        JLabel icone = new JLabel () ;
+        icone.setBounds(getContentPane ().getWidth()-300, 40, 283, 276);
+        icone.setIcon(UserInfo.iconRotation2D);
+        getContentPane ().add (icone) ;
+        icone.setVisible(true);
+        //Et on affiche...
+        rotation2DParam = new ParamsRotation2D (icone) ;
+        rotation2DParam.setBounds (getContentPane ().getWidth()/2-431/2,getContentPane ().getHeight()/2-513/2,431,513) ;
+        getContentPane ().add (rotation2DParam) ;
+        rotation2DParam.setVisible(true);
+        
+        //Données du graphique
+        xySeriesCollectionOK = new XYSeriesCollection();
+        // FreeChart...
+        JFreeChart chartOK = ChartFactory.createXYLineChart("Vitesse (items/mn)", "", "", xySeriesCollectionOK,
+            PlotOrientation.VERTICAL, true, false, false);
+        chartOK.setBackgroundPaint(new Color(0,204 , 204));
+        chartPanelOK = new ChartPanel( chartOK ) ;
+        getContentPane ().add (chartPanelOK) ;
+        chartPanelOK.setBounds(30, 90, 270, 250);
+        chartPanelOK.setVisible(true);
+        chartPanelOK.setPopupMenu(null);
+        
+        //On affiche
+        revalidate () ;
+        repaint () ;
+    }
+    
     void initPolygons () {
         
-        //Si c'est dékjà affiché, on fait rien
+        //Si c'est déjà affiché, on fait rien
         if (polygonsParam != null) return ;
         //Sinon, on efface tout
         disposePreviousPanels () ;

@@ -38,6 +38,7 @@ public class UserInfo {
         resultatsPolygons = new LinkedList<Session> () ;
         resultatsShepard = new LinkedList<Session> () ;
         resultatsSymetry = new LinkedList<Session> () ;
+        resultatsRotation2D = new LinkedList<Session> () ;
         //On récupère la macAdress pour la connection
         try {
             InetAddress ip = InetAddress.getLocalHost();
@@ -52,7 +53,7 @@ public class UserInfo {
     }
     
     //Images par défaut
-    static public Icon iconTime, iconMonkey, iconFeature, iconShepard, iconButterfly;
+    static public Icon iconTime, iconMonkey, iconFeature, iconShepard, iconButterfly, iconRotation2D;
     
     String nom, prenom, titre, message, activite, adeli, code, mail ;
     String adr1, adr2, cp, ville, tel1, tel2 ;
@@ -67,6 +68,8 @@ public class UserInfo {
     static public boolean    modifiedResultatsShepard = false ;
     static public LinkedList resultatsSymetry ; //Résultats "Simétrie du papillon"
     static public boolean    modifiedResultatsSymetry = false ;
+    static public LinkedList resultatsRotation2D ; //Résultats "Simétrie du papillon"
+    static public boolean    modifiedResultatsRotation2D = false ;
     
     static public LinkedList listePatients ;
     static public int currentPatient ;
@@ -78,7 +81,7 @@ public class UserInfo {
     public static DialogJournal journal ;
     
     public String getSoftVersion () {
-        return "v.0.8.1 du 31/12/2017" ;
+        return "v.0.9.0beta du 31/12/2017" ;
     }
    
     public static void disposeAllResultats () {
@@ -96,10 +99,13 @@ public class UserInfo {
         
         resultatsSymetry.clear () ;
         modifiedResultatsSymetry = false ;
+        
+        resultatsRotation2D.clear () ;
+        modifiedResultatsRotation2D = false ;
     }
     
     static public boolean areThereModifiedResults () {
-        return modifiedResultatsMonkey && modifiedResultatsFeature && modifiedResultatsPolygons  && modifiedResultatsShepard  && modifiedResultatsSymetry ;
+        return modifiedResultatsMonkey && modifiedResultatsFeature && modifiedResultatsPolygons  && modifiedResultatsShepard  && modifiedResultatsSymetry && modifiedResultatsRotation2D ;
     }
     
     public void clearListePatients () {
@@ -147,6 +153,8 @@ public class UserInfo {
             OrthoVS.fen.computeChartsShepard(false) ;
         else if (OrthoVS.fen.symetryMenu.isSelected ())
             OrthoVS.fen.computeChartsSymetry(false) ;
+        else if (OrthoVS.fen.rotation2DMenu.isSelected ())
+            OrthoVS.fen.computeChartsRotation2D(false) ;
     }
 }
 

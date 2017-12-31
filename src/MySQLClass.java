@@ -157,7 +157,7 @@ public class MySQLClass {
         //On va chercher les données
         if (connect () != null) {
             try {
-                String updateSQL = "SELECT VS_MONK, VS_FEAT, VS_POLY, VS_SHEP, VS_SYM from Patients WHERE ID = " + UserInfo.currentPatient ;
+                String updateSQL = "SELECT VS_MONK, VS_FEAT, VS_POLY, VS_SHEP, VS_SYM, VS_ROT2D from Patients WHERE ID = " + UserInfo.currentPatient ;
                 PreparedStatement pstmt = connection.prepareStatement(updateSQL) ;
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
@@ -202,6 +202,14 @@ public class MySQLClass {
                             UserInfo.resultatsSymetry = (LinkedList) in.readObject() ;
                         }
                     } catch (Exception e) {UserInfo.journal.addJournal("loading Symetry : " + e.toString()) ;}
+                    //Résultats Rotation 2D
+                    try {
+                        input = rs.getBinaryStream("VS_ROT2D") ;
+                        if (input.available() > 0) {
+                            ObjectInput in = new ObjectInputStream(input);
+                            UserInfo.resultatsRotation2D = (LinkedList) in.readObject() ;
+                        }
+                    } catch (Exception e) {UserInfo.journal.addJournal("loading Rotation2D : " + e.toString()) ;}
                 }
                 pstmt.close () ;
             } catch (Exception e) {UserInfo.journal.addJournal("loading: " + e.toString()) ;}
@@ -217,6 +225,8 @@ public class MySQLClass {
         UserInfo.modifiedResultatsShepard = false ;
         if (UserInfo.resultatsSymetry == null) UserInfo.resultatsSymetry  = new LinkedList<Session> () ;
         UserInfo.modifiedResultatsSymetry = false ;
+        if (UserInfo.resultatsRotation2D == null) UserInfo.resultatsRotation2D  = new LinkedList<Session> () ;
+        UserInfo.modifiedResultatsRotation2D = false ;
         //On informe
         UserInfo.journal.addJournal ("Loading previous results (" + 
                 String.valueOf(System.currentTimeMillis()-debut ) + " ms)");

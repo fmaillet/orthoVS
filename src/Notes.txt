@@ -5,6 +5,9 @@
 - interrompre le timer si espace attendu
 - option "timer fluide ou pas" (pour les stressés du temps)
 
+v0.9.0 (en cours)
+- begin rotation2D
+
 v0.8.1 (31/12/2017)
 -symetry : corrected maj du graphe au chgt de patient
 
