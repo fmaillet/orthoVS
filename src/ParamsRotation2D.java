@@ -115,7 +115,7 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         jTitle.setForeground(new java.awt.Color(102, 102, 102));
         jTitle.setText("Rotation 2D");
 
-        jDurée.setModel(new javax.swing.SpinnerNumberModel(1, 1, 15, 1));
+        jDurée.setModel(new javax.swing.SpinnerNumberModel(3, 1, 15, 1));
         jDurée.setToolTipText("Durée de la série (en mn)");
         jDurée.setOpaque(false);
         jDurée.setPreferredSize(new java.awt.Dimension(35, 20));
@@ -141,7 +141,7 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel7.setText("Un trophé pour ");
 
-        jTrophy.setModel(new javax.swing.SpinnerNumberModel(5, 2, 5, 1));
+        jTrophy.setModel(new javax.swing.SpinnerNumberModel(6, 2, 10, 1));
         jTrophy.setOpaque(false);
 
         jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150" }));
@@ -485,6 +485,12 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
             score.reponse++ ;
             snd = new SoundClips (4) ; //GOOD
             snd.start () ;
+            //Trophy ?
+            threeCount++ ;
+            if (threeCount == nbGrillesForTrophy & trophyNumber<5) {
+                trophy[trophyNumber++].setEnabled(true);
+                threeCount = 0 ;
+            }
         }
         else {
             cadre.setBackground(Color.RED.brighter());
