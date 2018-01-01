@@ -1,5 +1,11 @@
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -7,6 +13,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.LinkedList;
@@ -495,14 +504,18 @@ class CadreSimple extends JPanel {
     JLabel label ;
     boolean isOrientedNormal ;
     Random rand ;
+    String item ;
+    BufferedImage grid;  // declare the image
+    int angle = 0 ;
     
     public CadreSimple (int size) {
         this.size = size ;
         this.setSize(size, size);
         setBackground(Color.CYAN);
-        
+        item = "A" ;
         rand = new Random () ;
         
+                
         //On affiche
         setVisible (true) ;
         //Label
@@ -515,12 +528,43 @@ class CadreSimple extends JPanel {
     }
     
     public void resetValue () {
-        isOrientedNormal = rand.nextBoolean() ;
         setBackground(Color.CYAN);
+        //grid = (BufferedImage)(this.createImage(this.getWidth(),this.getHeight()));
+        grid = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB) ;
+        isOrientedNormal = rand.nextBoolean() ;
+        
         if (isOrientedNormal)
-            label.setText("<html><div style='text-align: center;'>" + "N" + "</div></html>") ;
+            item = "G" ;
         else
-            label.setText("<html><div style='text-align: center;'>" + "M" + "</div></html>") ;
-        //label.setLocation(this.getWidth()/2-20/2, this.getHeight()/2-20/2);
+            item = "F" ;
+        //repaint() ;
+        Graphics2D g2 = (Graphics2D) grid.getGraphics() ;
+        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 100);
+        g2.setFont(f);
+        g2.setPaint(Color.BLACK);
+        g2.drawString(item, grid.getWidth()/2 - g2.getFontMetrics().stringWidth(item)/2, grid.getHeight()/2 + g2.getFontMetrics().getAscent() / 2);
+        angle = rand.nextInt(360) ;
     }
+    
+    
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            /*Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 80);
+            g.setFont(f);*/
+            int w = this.getWidth() ;
+            int h = this.getHeight() ;
+            //g2.drawString(item, 100, 100);
+            
+            /*AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+            tx.translate(0, -grid.getHeight(null));*/
+            
+            g2.rotate(Math.toRadians(angle), w / 2, h / 2);
+            
+            if (isOrientedNormal)
+                g2.drawRenderedImage(grid, null);
+            else
+                g2.drawImage(grid, w, 0, -w, h, null);
+            
+        }
 }
