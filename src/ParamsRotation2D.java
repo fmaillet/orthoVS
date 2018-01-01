@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -334,8 +335,8 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     
     //Progression de jeu
     static public boolean newGame = false ;
-    //Butterfly
-    //final ScheduledThreadPoolExecutor executor ;
+    JButton jTime ;
+    JProgressBar progressBar ;
     
     LaunchRotation2D (JPanel p, int itemSize, int amplitude, int durée, int nbGrilles, JLabel icon) {
         this.p = p ;
@@ -373,8 +374,26 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         jMiroir.setVisible(true); jMiroir.addActionListener(this);
         OrthoVS.fen.getContentPane().add (jMiroir) ;
 
-        //Icon butterfly
+        //Icon rotation2D
         this.jIconRotation2D.setLocation( OrthoVS.fen.getContentPane ().getWidth()-300, 40) ;
+        //Icon time
+        jTime = new JButton ( UserInfo.iconTime ) ;
+        jTime.setBorderPainted(false);
+        jTime.setContentAreaFilled(false);
+        jTime.setBounds(cadre.getX() - 35 , cadre.getY()-56, 32, 32);
+        OrthoVS.fen.getContentPane ().add (jTime) ;
+        jTime.setVisible(true);
+        //ProgressBar
+        progressBar = new JProgressBar();
+        progressBar.setMaximum(this.durée);
+        progressBar.setValue(0);
+        progressBar.setBounds(cadre.getX(), cadre.getY()-50, cadre.getWidth(), 20);
+        OrthoVS.fen.getContentPane().add (progressBar) ;
+        /*Border border = BorderFactory.createTitledBorder("Reste...");
+        progressBar.setBorder(border);*/
+        progressBar.setOpaque(false);
+        progressBar.setForeground(Color.PINK);
+        
         
         //On écoute le clavier
         OrthoVS.fen.addKeyListener (this) ;
@@ -409,6 +428,8 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         score.reponse = 0 ;
         //Début
         long tempsDebut = score.tr_i = System.currentTimeMillis();
+        //On lance le timer
+        DrawTimer timerThrd = new DrawTimer (progressBar, tempsDebut, this.durée) ;
         //On boucle
         do {
             OrthoVS.fen.requestFocus();
@@ -433,6 +454,9 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         } while (notFin) ;
         //temps de fin
         score.tr_f = System.currentTimeMillis() ;
+        //Arrêt de la barre de progression
+        timerThrd.interrupt();
+        
         //On supprime les trucs inutiles
         OrthoVS.fen.getContentPane().remove(cadre);
         OrthoVS.fen.getContentPane().remove(jNormal);

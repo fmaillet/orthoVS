@@ -426,6 +426,9 @@ class LaunchMonkeyLadder extends Thread {
             if (seconds > durée) notFin = false ;
             nCycle++ ;
         } while (notFin) ;
+        //Arrêt de la barre de progression
+        timerThrd.interrupt();
+        
         if (results.size() > 0) {
             Session session = new Session () ;
             //ajouter la date
