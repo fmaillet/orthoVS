@@ -49,17 +49,21 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         this.icone = icone ;
         if (OrthoVS.user.nom != null) {
             jGridSize.setEnabled (true) ;
+            jAmplitude.setEnabled (true) ;
             jDurée.setEnabled (true) ;
             //jDurée.setValue (1) ;
-            jGridSize.setSelectedIndex(2);
+            jGridSize.setSelectedIndex(6);
+            jAmplitude.setSelectedIndex(5);
             //jLabelGrid.setEnabled (true) ;
             //jGridSize.setSelectedIndex(1);
         }
         else {
             jGridSize.setSelectedIndex(1);
             jGridSize.setEnabled (false) ;
+            jAmplitude.setEnabled (false) ;
             //jLabelGrid.setEnabled (false) ;
             jGridSize.setSelectedIndex(1);
+            jAmplitude.setSelectedIndex(1);
             jDurée.setEnabled (false) ;
             jDurée.setValue (1) ;
         }
@@ -99,6 +103,9 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
         jLabel8 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabelGrid1 = new javax.swing.JLabel();
+        jAmplitude = new javax.swing.JComboBox<>();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setOpaque(false);
@@ -137,7 +144,8 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         jTrophy.setModel(new javax.swing.SpinnerNumberModel(5, 2, 5, 1));
         jTrophy.setOpaque(false);
 
-        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3 x 2", "3 x 3", "4 x 2", "4 x 3", "4 x 4", "5 x 2", "5 x 3", "5 x 4", "5 x 5" }));
+        jGridSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150" }));
+        jGridSize.setSelectedIndex(4);
         jGridSize.setToolTipText("Taille de la grille");
 
         jLabel12.setText("(1 à 15 minutes)");
@@ -150,18 +158,21 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         jLabel5.setText("Durée de la série :");
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        jLabel8.setText("grilles");
+        jLabel8.setText("items");
+
+        jLabel13.setText("(pixels)");
+        jLabel13.setEnabled(false);
+
+        jLabelGrid1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabelGrid1.setText("Amplitude angulaire :");
+
+        jAmplitude.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aucune", "0 à 45°", "0 à 90°", "0 à 180°", "0 à 270°", "0 à 360°" }));
+        jAmplitude.setToolTipText("Taille de la grille");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(38, 38, 38)
-                .addComponent(jManualStart)
-                .addGap(26, 26, 26)
-                .addComponent(jAutoStar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -175,6 +186,30 @@ public class ParamsRotation2D extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(29, 29, 29)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelGrid)
+                                    .addComponent(jLabelGrid1))
+                                .addGap(25, 25, 25)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jGridSize, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jLabel13))
+                                    .addComponent(jAmplitude, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(jManualStart)
+                                .addGap(26, 26, 26)
+                                .addComponent(jAutoStar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jSeparator3)
+                            .addComponent(jSeparator4)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -182,21 +217,12 @@ public class ParamsRotation2D extends javax.swing.JPanel {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(jLabel8))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabelGrid)
-                                            .addComponent(jLabel5))
+                                        .addComponent(jLabel5)
                                         .addGap(47, 47, 47)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jDurée, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jGridSize, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jDurée, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(jLabel12)))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator3)
-                            .addComponent(jSeparator4))))
+                                .addGap(0, 88, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -209,8 +235,13 @@ public class ParamsRotation2D extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jGridSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelGrid))
-                .addGap(14, 14, 14)
+                    .addComponent(jLabelGrid)
+                    .addComponent(jLabel13))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelGrid1)
+                    .addComponent(jAmplitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jDurée, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -228,12 +259,13 @@ public class ParamsRotation2D extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jManualStart)
                     .addComponent(jAutoStar))
-                .addContainerGap(196, Short.MAX_VALUE))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jManualStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jManualStartActionPerformed
-        int size = (Integer) jGridSize.getSelectedIndex() ;
+        int itemSize = (Integer) 50 + jGridSize.getSelectedIndex() * 10 ;
+        int degres = jAmplitude.getSelectedIndex() ;
         int nbGrilles   = (Integer) jTrophy.getValue() ;
         int durée =  (Integer) jDurée.getValue() ;
         //on lance l'activité
@@ -241,7 +273,7 @@ public class ParamsRotation2D extends javax.swing.JPanel {
         //OrthoVS.fen.setExtendedState(OrthoVS.fen.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         //OrthoVS.fen.repaint () ;
         
-        LaunchRotation2D l = new LaunchRotation2D (this, size, durée, nbGrilles, icone) ;
+        LaunchRotation2D l = new LaunchRotation2D (this, itemSize, degres, durée, nbGrilles, icone) ;
     }//GEN-LAST:event_jManualStartActionPerformed
 
     private void jAutoStarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAutoStarActionPerformed
@@ -254,14 +286,17 @@ public class ParamsRotation2D extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> jAmplitude;
     private javax.swing.JButton jAutoStar;
     public static javax.swing.JSpinner jDurée;
     private javax.swing.JComboBox<String> jGridSize;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel5;
     public static javax.swing.JLabel jLabel7;
     public static javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabelGrid;
+    private javax.swing.JLabel jLabelGrid1;
     private javax.swing.JButton jManualStart;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -275,7 +310,8 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     
     Thread t ;    
     JPanel p ;
-    int size, durée ;
+    int PANEL_SIZE = 300 ;
+    int itemSize, durée, amplitude ;
     static int nbGrillesForTrophy ;
     JLabel jIconRotation2D ;
     
@@ -301,9 +337,10 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     //Butterfly
     //final ScheduledThreadPoolExecutor executor ;
     
-    LaunchRotation2D (JPanel p, int size, int durée, int nbGrilles, JLabel icon) {
+    LaunchRotation2D (JPanel p, int itemSize, int amplitude, int durée, int nbGrilles, JLabel icon) {
         this.p = p ;
-        this.size = 300 ;
+        this.itemSize = itemSize ;
+        this.amplitude = amplitude ;
         this.durée = durée * 60 ;
         this.nbGrillesForTrophy = nbGrilles ;
         this.jIconRotation2D = icon ;
@@ -320,8 +357,8 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         //OrthoVS.fen.chartPanelOK.setVisible(false);
         
         //Cadre
-        cadre = new CadreSimple (this.size) ;
-        cadre.setLocation((OrthoVS.fen.getContentPane().getWidth()/2-(this.size)/2), (OrthoVS.fen.getContentPane().getHeight()/2-(this.size)));
+        cadre = new CadreSimple (PANEL_SIZE, itemSize, amplitude) ;
+        cadre.setLocation((OrthoVS.fen.getContentPane().getWidth()/2-(PANEL_SIZE)/2), (OrthoVS.fen.getContentPane().getHeight()/2-(PANEL_SIZE)));
         OrthoVS.fen.getContentPane().add (cadre) ;
         cadre.validate () ;
         //Les deux boutons
@@ -350,22 +387,6 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
     @Override
     public void run () {
         
-        //Taille des grilles
-        int h, v ;
-        switch (size) {
-            case 0 : h=3; v=2; break;
-            case 1 : h=3; v=3; break;
-            case 2 : h=4; v=2; break;
-            case 3 : h=4; v=3; break;
-            case 4 : h=4; v=4; break;
-            case 5 : h=5; v=2; break;
-            case 6 : h=5; v=3; break;
-            case 7 : h=5; v=4; break;
-            case 8 : h=5; v=5; break;
-            default: h=4; v=3; break;
-        }
-        
-        
         //Create trophy
         trophy = new JLabel[5] ;
         for (int i=0; i<5; i++) {
@@ -380,16 +401,11 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         //On redessine
         OrthoVS.fen.repaint () ;
         //originalGrid.requestFocusInWindow(); //necessary for ESC
-        
-        
-        //On initialise les grilles
-        
-        
-        
+               
         notFin = true ;  
         //Score
         score = new Score () ;
-        score.level = this.size ;
+        score.level = itemSize ;
         score.reponse = 0 ;
         //Début
         long tempsDebut = score.tr_i = System.currentTimeMillis();
@@ -428,7 +444,7 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         //Calcul du score
         Session session = new Session () ;
         session.date = new Date () ;
-        session.gridSize = this.size ;
+        session.gridSize = itemSize ; ;
         LinkedList<Score> results = new LinkedList<Score> () ;
         results.add(score); 
         session.results = results ;
@@ -500,31 +516,35 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
 }
 
 class CadreSimple extends JPanel {
-    int size ;
-    JLabel label ;
+    int itemSize, panelSize, amplitude ;
+    
     boolean isOrientedNormal ;
     Random rand ;
     String item ;
     BufferedImage grid;  // declare the image
     int angle = 0 ;
     
-    public CadreSimple (int size) {
-        this.size = size ;
-        this.setSize(size, size);
+    String items = "RPFG" ;
+    
+    public CadreSimple (int panelSize, int itemSize, int amplitude) {
+        this.itemSize = itemSize ;
+        this.panelSize = panelSize ;
+        switch(amplitude) {
+            case 0 : this.amplitude = 0   ; break ;
+            case 1 : this.amplitude = 45  ; break ;
+            case 2 : this.amplitude = 90  ; break ;
+            case 3 : this.amplitude = 180 ; break ;
+            case 4 : this.amplitude = 270 ; break ;
+            default: this.amplitude = 380 ; break ;
+        }
+        this.setSize(panelSize, panelSize);
         setBackground(Color.CYAN);
         item = "A" ;
         rand = new Random () ;
-        
-                
+     
         //On affiche
         setVisible (true) ;
-        //Label
-        label = new JLabel ("") ;
-        //label.setBackground(Color.red);
-        //label.setOpaque(true);
-        label.setSize(20, 20);
-        label.setLocation(this.getWidth()/2-20/2, this.getHeight()/2-20/2);
-        add(label) ;
+        resetValue (); 
     }
     
     public void resetValue () {
@@ -533,17 +553,20 @@ class CadreSimple extends JPanel {
         grid = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB) ;
         isOrientedNormal = rand.nextBoolean() ;
         
-        if (isOrientedNormal)
-            item = "G" ;
-        else
-            item = "F" ;
-        //repaint() ;
+        int idx  = rand.nextInt(items.length()) ;
+        char s = items.charAt(idx) ;
+        item = String.valueOf(s) ;
+        
         Graphics2D g2 = (Graphics2D) grid.getGraphics() ;
-        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 100);
+        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, itemSize);
         g2.setFont(f);
         g2.setPaint(Color.BLACK);
         g2.drawString(item, grid.getWidth()/2 - g2.getFontMetrics().stringWidth(item)/2, grid.getHeight()/2 + g2.getFontMetrics().getAscent() / 2);
-        angle = rand.nextInt(360) ;
+        
+        if (amplitude > 0)
+            angle = rand.nextInt(this.amplitude) ;
+        else
+            angle = 0 ;
     }
     
     
@@ -552,19 +575,19 @@ class CadreSimple extends JPanel {
             Graphics2D g2 = (Graphics2D) g;
             /*Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 80);
             g.setFont(f);*/
-            int w = this.getWidth() ;
-            int h = this.getHeight() ;
+            //int w = this.getWidth() ;
+            //int h = this.getHeight() ;
             //g2.drawString(item, 100, 100);
             
             /*AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
             tx.translate(0, -grid.getHeight(null));*/
             
-            g2.rotate(Math.toRadians(angle), w / 2, h / 2);
+            g2.rotate(Math.toRadians(angle), panelSize / 2, panelSize / 2);
             
             if (isOrientedNormal)
                 g2.drawRenderedImage(grid, null);
             else
-                g2.drawImage(grid, w, 0, -w, h, null);
+                g2.drawImage(grid, panelSize, 0, -panelSize, panelSize, null);
             
         }
 }
