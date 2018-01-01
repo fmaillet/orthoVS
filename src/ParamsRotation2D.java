@@ -461,6 +461,8 @@ class LaunchRotation2D extends Thread implements ActionListener, KeyListener {
         OrthoVS.fen.getContentPane().remove(cadre);
         OrthoVS.fen.getContentPane().remove(jNormal);
         OrthoVS.fen.getContentPane().remove(jMiroir);
+        OrthoVS.fen.getContentPane().remove(progressBar);
+        OrthoVS.fen.getContentPane().remove(jTime);
         //OrthoVS.fen.getContentPane().remove(jButterfly);
         for (int i=0; i<trophy.length; i++)
             OrthoVS.fen.getContentPane().remove(trophy[i]) ;
@@ -552,7 +554,9 @@ class CadreSimple extends JPanel {
     Random rand ;
     String item ;
     BufferedImage grid;  // declare the image
+    Graphics2D g2 ;
     int angle = 0 ;
+    Font f ;
     
     String items = "RPFG" ;
     
@@ -571,28 +575,34 @@ class CadreSimple extends JPanel {
         setBackground(Color.CYAN);
         item = "A" ;
         rand = new Random () ;
-     
+        
+        //Les trucs par défaut pour dessiner le caractère
+        f = new Font(Font.SANS_SERIF, Font.PLAIN, itemSize);
+        grid = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB) ;
+        g2 = (Graphics2D) grid.getGraphics() ;
+        g2.setBackground(new Color(0, 0, 0, 0));
+        g2.setFont(f);
+        g2.setPaint(Color.BLACK);
+        
         //On affiche
         setVisible (true) ;
         resetValue (); 
     }
     
     public void resetValue () {
+        //On reforce le fond après avoir mis du vert ou du rouge
         setBackground(Color.CYAN);
-        //grid = (BufferedImage)(this.createImage(this.getWidth(),this.getHeight()));
-        grid = new BufferedImage(this.getWidth(),this.getHeight(), BufferedImage.TYPE_INT_ARGB) ;
+        //Miroir ou pas ?        
         isOrientedNormal = rand.nextBoolean() ;
-        
+        //Choix du caractère
         int idx  = rand.nextInt(items.length()) ;
         char s = items.charAt(idx) ;
         item = String.valueOf(s) ;
         
-        Graphics2D g2 = (Graphics2D) grid.getGraphics() ;
-        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, itemSize);
-        g2.setFont(f);
-        g2.setPaint(Color.BLACK);
+        //On efface et dessine le caractère
+        g2.clearRect(0, 0, panelSize, panelSize);
         g2.drawString(item, grid.getWidth()/2 - g2.getFontMetrics().stringWidth(item)/2, grid.getHeight()/2 + g2.getFontMetrics().getAscent() / 2);
-        
+        //Amplitude angulaire
         if (amplitude > 0)
             angle = rand.nextInt(this.amplitude) ;
         else
@@ -603,17 +613,10 @@ class CadreSimple extends JPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
-            /*Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 80);
-            g.setFont(f);*/
-            //int w = this.getWidth() ;
-            //int h = this.getHeight() ;
-            //g2.drawString(item, 100, 100);
             
-            /*AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-            tx.translate(0, -grid.getHeight(null));*/
-            
+            //On fait tourner le caractère
             g2.rotate(Math.toRadians(angle), panelSize / 2, panelSize / 2);
-            
+            //Miroir ou pas
             if (isOrientedNormal)
                 g2.drawRenderedImage(grid, null);
             else

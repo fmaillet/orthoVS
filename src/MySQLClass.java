@@ -147,6 +147,9 @@ public class MySQLClass {
         if (UserInfo.modifiedResultatsSymetry) {
             SaveSymetryThrd rg = new SaveSymetryThrd () ;
         }
+        if (UserInfo.modifiedResultatsRotation2D) {
+            SaveRotation2DThrd rg = new SaveRotation2DThrd () ;
+        }
     }
     
     //Test lire les datats
@@ -444,6 +447,48 @@ class SaveSymetryThrd implements Runnable {
             } catch (Exception e) {UserInfo.journal.addJournal(e.toString()) ;}
         }
         UserInfo.journal.addJournal ("Saving ResultatsSym (" + 
+                String.valueOf(System.currentTimeMillis()-debut ) + " ms)");
+    }
+    
+}
+
+class SaveRotation2DThrd implements Runnable {
+    
+    Thread t ;
+
+    SaveRotation2DThrd () {
+        t = new Thread (this, "savingRotation") ;
+        t.start ( ) ;
+        //On force l'attente de la fin de la sauvegarde
+        //try { t.join();} catch (InterruptedException e) {}
+    }
+    
+    @Override
+    public void run() {
+        //On informe
+        //UserInfo.journal.addJournal("Saving ResultatsRG.") ;
+        long debut = System.currentTimeMillis();
+        //connect () ;
+        if (OrthoVS.mySQLConnection.connect () != null) {
+            try { 
+                String updateSQL = "UPDATE Patients SET VS_ROT2D = ? WHERE ID = " + OrthoVS.user.currentPatient ;
+                PreparedStatement pstmt = OrthoVS.mySQLConnection.connection.prepareStatement(updateSQL) ;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(UserInfo.resultatsRotation2D);
+                byte[] bytes = bos.toByteArray();
+                InputStream input = new ByteArrayInputStream(bytes) ;
+                
+                pstmt.setBinaryStream(1, input);
+                pstmt.executeUpdate() ;
+                pstmt.close () ;
+                //On ralenti le thread pour tester une comm lente
+                //Thread.sleep (10000) ;
+                UserInfo.modifiedResultatsRotation2D = false ;
+                
+            } catch (Exception e) {UserInfo.journal.addJournal(e.toString()) ;}
+        }
+        UserInfo.journal.addJournal ("Saving ResultatsRot2D (" + 
                 String.valueOf(System.currentTimeMillis()-debut ) + " ms)");
     }
     

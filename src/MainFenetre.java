@@ -379,7 +379,7 @@ public class MainFenetre extends JFrame implements ActionListener, MouseMotionLi
         
         long memory = runtime.totalMemory() - runtime.freeMemory();
         memory = memory / (1024L * 1024L) ; 
-        JOptionPane.showMessageDialog(this, "orthoVS\n"+ OrthoVS.user.getSoftVersion()+"\n(Mémoire utilisée : " + memory + " Mo)"+"\n\nFrédéric Maillet - Orthoptiste (Toulouse)" , "A Propos", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "orthoVS\n"+ OrthoVS.user.getSoftVersion()+"\n(Mémoire utilisée : " + memory + " Mo)"+"\n\n--Frédéric Maillet\nOrthoptiste Neuropsychologue\n(Toulouse)" , "A Propos", JOptionPane.INFORMATION_MESSAGE);
         //System.out.println(System.getProperty("os.name"));
     }
     
